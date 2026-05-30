@@ -4,8 +4,10 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { useNavigate } from '@tanstack/react-router'
 import { useForm } from 'react-hook-form'
 import { useMutation } from '@tanstack/react-query'
-import { apiClient, endpoints, request } from '@/lib'
-import type { AuthorizedUser } from '../types'
+import { apiClient } from '@/lib/services/api'
+import { endpoints } from '@/lib/services/endpoints'
+import { request } from '@/lib/services/requst'
+import type { AuthorizedUser } from '@/typescript'
 import LoginFormUi from './LoginFormUi'
 
 const signIn = async (data: LoginFormProps) => {
@@ -40,9 +42,8 @@ export function LoginForm() {
         useAuthStore.setState({ user: res.data, authorized: true })
       }
       navigate({ to: '/dashboard' })
-    }
+    },
   })
-
 
   return (
     <LoginFormUi

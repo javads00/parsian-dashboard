@@ -55,9 +55,10 @@ export function useCustomPaginationQuery<T>({
 }: UsePaginationQueryOptionsProps<T>) {
   const [page, setPage] = useState(1)
   const finalUrl = url(page)
+  const finalKey =key(page )
 
-  const finalKey =key(page)
 
+  
   const queryResult = useCustomQuery<T>({
     url: finalUrl,
     key:finalKey as Array<string | object>,

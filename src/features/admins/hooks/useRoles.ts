@@ -1,10 +1,11 @@
-import { endpoints, useCustomQuery } from '@/lib'
-import type { Role } from '@/typescript'
+import { endpoints } from '@/lib/services/endpoints'
+import { useCustomQuery } from '@/lib/services/useQuery'
+import type { TRole } from '@/typescript'
 
 export function useRoles() {
-  const { data, isPending } = useCustomQuery<Role[]>({
-    url: endpoints.roles.list(),
-    key: endpoints.roles.key(),
+  const { data, isPending } = useCustomQuery<TRole[]>({
+    url: endpoints?.roles?.list(1, 10),
+    key: endpoints?.roles?.key(1, 10),
   })
 
   return {

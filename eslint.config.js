@@ -24,6 +24,7 @@ const eslintConfig = [// ⛔️ Ignore paths
 {
   ignores: [
     '**/node_modules/',
+    '**/build/',
     '**/dist/',
     '**/out/',
     '**/package-lock.json',

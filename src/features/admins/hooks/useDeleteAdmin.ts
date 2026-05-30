@@ -1,5 +1,6 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query'
-import { apiClient, endpoints } from '@/lib'
+import { apiClient } from '@/lib/services/api'
+import { endpoints } from '@/lib/services/endpoints'
 import type { ApiResponse } from '@/lib/services/type'
 
 const deleteAdmin = async (id: string) => {

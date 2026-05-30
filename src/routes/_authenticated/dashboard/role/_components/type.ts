@@ -1,4 +1,4 @@
-export type OrderStatus = {
+export type RoleStatus = {
   description: string
   id: string
   label: string
@@ -6,7 +6,7 @@ export type OrderStatus = {
 }
 
 // Order List Request Types
-export type OrderListCondition = {
+export type RoleListCondition = {
   type?: string
   from?: string
   to?: string
@@ -36,14 +36,14 @@ export type OrderListCondition = {
   taxExempt?: number
 }
 
-export type OrderListRequest = {
+export type RoleListRequest = {
   page: number
   limit: number
-  condition: OrderListCondition
+  condition: RoleListCondition
 }
 
-export type OrdersFilterProps = {
-  filters: OrderListRequest
-  onFilterChange: (partial: Partial<OrderListRequest>) => void
-  statusData: OrderStatus[]
+export type RoleFilterProps = {
+  filters: RoleListRequest
+  onFilterChange: (partial: Partial<RoleListRequest>) => void
+  statusData: RoleStatus[]
 }

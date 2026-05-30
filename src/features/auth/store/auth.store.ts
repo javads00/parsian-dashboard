@@ -1,9 +1,12 @@
-import { apiClient, endpoints, request } from '@/lib'
+import { registerAuthHandlers } from '@/lib/services/auth-context'
+import { apiClient } from '@/lib/services/api'
+import { endpoints } from '@/lib/services/endpoints'
+import { request } from '@/lib/services/requst'
 import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
-import type { AuthStore, AuthorizedUser } from '../types'
+import type { AuthorizedUser, TAuthStore } from '@/typescript'
 
-const authStore = create<AuthStore>()(
+const authStore = create<TAuthStore>()(
   persist(
     (set) => ({
       user: null,
@@ -47,6 +50,11 @@ const authStore = create<AuthStore>()(
     }
   )
 )
+
+registerAuthHandlers({
+  getAccessToken: () => authStore.getState().user?.accessToken,
+  signOut: () => authStore.getState().signOut(),
+})
 
 export const getAuthStore = () => authStore
 export const useAuthStore = authStore

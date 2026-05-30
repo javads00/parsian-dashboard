@@ -9,7 +9,7 @@ const createAdminSchema = z.object({
     email: z.string().email('Please enter a valid email address'),
     username: z.string().min(5, 'Username must be at least 5 characters'),
     phone: z.string().min(10, 'Phone number must be at least 10 characters'),
-    roleId: z.string().min(1, 'Please select a role'),
+    roleId: z.string().min(1, 'Please select a role')
 })
 
 export type CreateAdminFormData = z.infer<typeof createAdminSchema>

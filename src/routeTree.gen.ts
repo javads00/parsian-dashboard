@@ -15,6 +15,9 @@ import { Route as LoginIndexRouteImport } from './routes/login/index'
 import { Route as AuthenticatedDashboardRouteRouteImport } from './routes/_authenticated/dashboard/route'
 import { Route as AuthenticatedDashboardIndexRouteImport } from './routes/_authenticated/dashboard/index'
 import { Route as AuthenticatedDashboardRoleIndexRouteImport } from './routes/_authenticated/dashboard/role/index'
+import { Route as AuthenticatedDashboardOrderStatusIndexRouteImport } from './routes/_authenticated/dashboard/orderStatus/index'
+import { Route as AuthenticatedDashboardLabelIndexRouteImport } from './routes/_authenticated/dashboard/label/index'
+import { Route as AuthenticatedDashboardCountryIndexRouteImport } from './routes/_authenticated/dashboard/country/index'
 import { Route as AuthenticatedDashboardAdminsIndexRouteImport } from './routes/_authenticated/dashboard/admins/index'
 
 const AuthenticatedRouteRoute = AuthenticatedRouteRouteImport.update({
@@ -49,6 +52,24 @@ const AuthenticatedDashboardRoleIndexRoute =
     path: '/role/',
     getParentRoute: () => AuthenticatedDashboardRouteRoute,
   } as any)
+const AuthenticatedDashboardOrderStatusIndexRoute =
+  AuthenticatedDashboardOrderStatusIndexRouteImport.update({
+    id: '/orderStatus/',
+    path: '/orderStatus/',
+    getParentRoute: () => AuthenticatedDashboardRouteRoute,
+  } as any)
+const AuthenticatedDashboardLabelIndexRoute =
+  AuthenticatedDashboardLabelIndexRouteImport.update({
+    id: '/label/',
+    path: '/label/',
+    getParentRoute: () => AuthenticatedDashboardRouteRoute,
+  } as any)
+const AuthenticatedDashboardCountryIndexRoute =
+  AuthenticatedDashboardCountryIndexRouteImport.update({
+    id: '/country/',
+    path: '/country/',
+    getParentRoute: () => AuthenticatedDashboardRouteRoute,
+  } as any)
 const AuthenticatedDashboardAdminsIndexRoute =
   AuthenticatedDashboardAdminsIndexRouteImport.update({
     id: '/admins/',
@@ -59,16 +80,22 @@ const AuthenticatedDashboardAdminsIndexRoute =
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/dashboard': typeof AuthenticatedDashboardRouteRouteWithChildren
-  '/login': typeof LoginIndexRoute
+  '/login/': typeof LoginIndexRoute
   '/dashboard/': typeof AuthenticatedDashboardIndexRoute
-  '/dashboard/admins': typeof AuthenticatedDashboardAdminsIndexRoute
-  '/dashboard/role': typeof AuthenticatedDashboardRoleIndexRoute
+  '/dashboard/admins/': typeof AuthenticatedDashboardAdminsIndexRoute
+  '/dashboard/country/': typeof AuthenticatedDashboardCountryIndexRoute
+  '/dashboard/label/': typeof AuthenticatedDashboardLabelIndexRoute
+  '/dashboard/orderStatus/': typeof AuthenticatedDashboardOrderStatusIndexRoute
+  '/dashboard/role/': typeof AuthenticatedDashboardRoleIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/login': typeof LoginIndexRoute
   '/dashboard': typeof AuthenticatedDashboardIndexRoute
   '/dashboard/admins': typeof AuthenticatedDashboardAdminsIndexRoute
+  '/dashboard/country': typeof AuthenticatedDashboardCountryIndexRoute
+  '/dashboard/label': typeof AuthenticatedDashboardLabelIndexRoute
+  '/dashboard/orderStatus': typeof AuthenticatedDashboardOrderStatusIndexRoute
   '/dashboard/role': typeof AuthenticatedDashboardRoleIndexRoute
 }
 export interface FileRoutesById {
@@ -79,6 +106,9 @@ export interface FileRoutesById {
   '/login/': typeof LoginIndexRoute
   '/_authenticated/dashboard/': typeof AuthenticatedDashboardIndexRoute
   '/_authenticated/dashboard/admins/': typeof AuthenticatedDashboardAdminsIndexRoute
+  '/_authenticated/dashboard/country/': typeof AuthenticatedDashboardCountryIndexRoute
+  '/_authenticated/dashboard/label/': typeof AuthenticatedDashboardLabelIndexRoute
+  '/_authenticated/dashboard/orderStatus/': typeof AuthenticatedDashboardOrderStatusIndexRoute
   '/_authenticated/dashboard/role/': typeof AuthenticatedDashboardRoleIndexRoute
 }
 export interface FileRouteTypes {
@@ -86,12 +116,23 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/dashboard'
-    | '/login'
+    | '/login/'
     | '/dashboard/'
-    | '/dashboard/admins'
-    | '/dashboard/role'
+    | '/dashboard/admins/'
+    | '/dashboard/country/'
+    | '/dashboard/label/'
+    | '/dashboard/orderStatus/'
+    | '/dashboard/role/'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/login' | '/dashboard' | '/dashboard/admins' | '/dashboard/role'
+  to:
+    | '/'
+    | '/login'
+    | '/dashboard'
+    | '/dashboard/admins'
+    | '/dashboard/country'
+    | '/dashboard/label'
+    | '/dashboard/orderStatus'
+    | '/dashboard/role'
   id:
     | '__root__'
     | '/'
@@ -100,6 +141,9 @@ export interface FileRouteTypes {
     | '/login/'
     | '/_authenticated/dashboard/'
     | '/_authenticated/dashboard/admins/'
+    | '/_authenticated/dashboard/country/'
+    | '/_authenticated/dashboard/label/'
+    | '/_authenticated/dashboard/orderStatus/'
     | '/_authenticated/dashboard/role/'
   fileRoutesById: FileRoutesById
 }
@@ -114,7 +158,7 @@ declare module '@tanstack/react-router' {
     '/_authenticated': {
       id: '/_authenticated'
       path: ''
-      fullPath: ''
+      fullPath: '/'
       preLoaderRoute: typeof AuthenticatedRouteRouteImport
       parentRoute: typeof rootRouteImport
     }
@@ -128,7 +172,7 @@ declare module '@tanstack/react-router' {
     '/login/': {
       id: '/login/'
       path: '/login'
-      fullPath: '/login'
+      fullPath: '/login/'
       preLoaderRoute: typeof LoginIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
@@ -149,14 +193,35 @@ declare module '@tanstack/react-router' {
     '/_authenticated/dashboard/role/': {
       id: '/_authenticated/dashboard/role/'
       path: '/role'
-      fullPath: '/dashboard/role'
+      fullPath: '/dashboard/role/'
       preLoaderRoute: typeof AuthenticatedDashboardRoleIndexRouteImport
+      parentRoute: typeof AuthenticatedDashboardRouteRoute
+    }
+    '/_authenticated/dashboard/orderStatus/': {
+      id: '/_authenticated/dashboard/orderStatus/'
+      path: '/orderStatus'
+      fullPath: '/dashboard/orderStatus/'
+      preLoaderRoute: typeof AuthenticatedDashboardOrderStatusIndexRouteImport
+      parentRoute: typeof AuthenticatedDashboardRouteRoute
+    }
+    '/_authenticated/dashboard/label/': {
+      id: '/_authenticated/dashboard/label/'
+      path: '/label'
+      fullPath: '/dashboard/label/'
+      preLoaderRoute: typeof AuthenticatedDashboardLabelIndexRouteImport
+      parentRoute: typeof AuthenticatedDashboardRouteRoute
+    }
+    '/_authenticated/dashboard/country/': {
+      id: '/_authenticated/dashboard/country/'
+      path: '/country'
+      fullPath: '/dashboard/country/'
+      preLoaderRoute: typeof AuthenticatedDashboardCountryIndexRouteImport
       parentRoute: typeof AuthenticatedDashboardRouteRoute
     }
     '/_authenticated/dashboard/admins/': {
       id: '/_authenticated/dashboard/admins/'
       path: '/admins'
-      fullPath: '/dashboard/admins'
+      fullPath: '/dashboard/admins/'
       preLoaderRoute: typeof AuthenticatedDashboardAdminsIndexRouteImport
       parentRoute: typeof AuthenticatedDashboardRouteRoute
     }
@@ -166,6 +231,9 @@ declare module '@tanstack/react-router' {
 interface AuthenticatedDashboardRouteRouteChildren {
   AuthenticatedDashboardIndexRoute: typeof AuthenticatedDashboardIndexRoute
   AuthenticatedDashboardAdminsIndexRoute: typeof AuthenticatedDashboardAdminsIndexRoute
+  AuthenticatedDashboardCountryIndexRoute: typeof AuthenticatedDashboardCountryIndexRoute
+  AuthenticatedDashboardLabelIndexRoute: typeof AuthenticatedDashboardLabelIndexRoute
+  AuthenticatedDashboardOrderStatusIndexRoute: typeof AuthenticatedDashboardOrderStatusIndexRoute
   AuthenticatedDashboardRoleIndexRoute: typeof AuthenticatedDashboardRoleIndexRoute
 }
 
@@ -174,6 +242,12 @@ const AuthenticatedDashboardRouteRouteChildren: AuthenticatedDashboardRouteRoute
     AuthenticatedDashboardIndexRoute: AuthenticatedDashboardIndexRoute,
     AuthenticatedDashboardAdminsIndexRoute:
       AuthenticatedDashboardAdminsIndexRoute,
+    AuthenticatedDashboardCountryIndexRoute:
+      AuthenticatedDashboardCountryIndexRoute,
+    AuthenticatedDashboardLabelIndexRoute:
+      AuthenticatedDashboardLabelIndexRoute,
+    AuthenticatedDashboardOrderStatusIndexRoute:
+      AuthenticatedDashboardOrderStatusIndexRoute,
     AuthenticatedDashboardRoleIndexRoute: AuthenticatedDashboardRoleIndexRoute,
   }
 

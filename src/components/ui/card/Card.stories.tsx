@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
-import { Button } from '../button/Button'
+import { Button } from '../forms/button/Button'
 import {
   Card,
   CardAction,

@@ -1,3 +1,5 @@
+import { Icon } from '@/assets/icon'
+import { AppLink } from '@/components/ui/link'
 import {
   Sidebar,
   SidebarContent,
@@ -8,8 +10,8 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from '@/components/ui/sidebar'
-import { MENU_ITEMS } from '@/data'
 import { useAuthStore } from '@/features'
+import { useFilteredMenuItems } from '@/hooks/useFilteredMenuItems'
 import type { SideBarComponentProps } from '@/routes/_authenticated/dashboard/_components/type'
 import { useLocation, useNavigate } from '@tanstack/react-router'
 import { LogOut } from 'lucide-react'
@@ -18,15 +20,24 @@ export function SideBarComponent() {
   const { signOut, isSigningOut } = useAuthStore()
   const navigate = useNavigate()
   const location = useLocation()
+  const menuItems = useFilteredMenuItems()
 
   const handleSignOut = async () => {
     await signOut?.()
     navigate({ to: '/login' })
   }
-  return <SideBarUi isSigningOut={isSigningOut} handleSignOut={handleSignOut} location={location} />
+
+  return (
+    <SideBarUi
+      menuItems={menuItems}
+      isSigningOut={isSigningOut}
+      handleSignOut={handleSignOut}
+      location={location}
+    />
+  )
 }
 
-function SideBarUi({ isSigningOut, handleSignOut, location }: SideBarComponentProps) {
+function SideBarUi({ isSigningOut, handleSignOut, location, menuItems }: SideBarComponentProps) {
   return (
     <Sidebar collapsible="icon">
       <SidebarContent>
@@ -34,13 +45,13 @@ function SideBarUi({ isSigningOut, handleSignOut, location }: SideBarComponentPr
           <SidebarGroupLabel>Application</SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
-              {MENU_ITEMS.map((item) => (
+              {menuItems.map((item) => (
                 <SidebarMenuItem key={item.url}>
                   <SidebarMenuButton asChild isActive={location.pathname === item.url}>
-                    <a href={item.url}>
-                      <item.icon />
+                    <AppLink to={item.url} className="flex items-center gap-2">
+                      <Icon iconType={item.icon} />
                       <span>{item.title}</span>
-                    </a>
+                    </AppLink>
                   </SidebarMenuButton>
                 </SidebarMenuItem>
               ))}

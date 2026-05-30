@@ -1,75 +1,119 @@
-import { adminFormSchema, useCustomMutation, type AdminFormProps } from '@/lib'
+import { adminFormSchema, type AdminFormProps } from '@/lib'
+import { endpoints } from '@/lib/services/endpoints'
+import { useCustomMutation } from '@/lib/services/useMutation'
 import { zodResolver } from '@hookform/resolvers/zod'
+import { useEffect, useMemo } from 'react'
 import { useForm } from 'react-hook-form'
-import { endpoints } from '@/lib'
+import { useQueryClient } from '@tanstack/react-query'
+import { adminQueryKeys } from '@/lib/services/endpoints'
 import AdminsFormUi from './AdminsFormUi'
 import { useRoles } from './hooks/useRoles'
-import { useCustomMutationNormal } from '@/lib/services/useCustomMutation'
-import { QueryClient, useQueryClient } from '@tanstack/react-query'
+import { z } from 'zod'
 
-
+type AdminFormComponentProps = {
+  onSubmit?: (data: AdminFormProps) => void | Promise<void>
+  onCancel: () => void
+  onSuccess?: () => void
+  defaultValues?: Partial<AdminFormProps>
+  editId?: string
+  isPending?: boolean
+}
 
 export function AdminForm({
   onSubmit,
   onCancel,
-  onSuccess
-}: {
-  onSubmit?: (data: AdminFormProps) => void
-  onCancel: () => void
-  onSuccess?: () => void
-}) {
+  onSuccess,
+  defaultValues,
+  editId,
+  isPending = false,
+}: AdminFormComponentProps) {
+  const isEditMode = Boolean(defaultValues && Object.keys(defaultValues).length > 0)
+  const formSchema = isEditMode
+    ? adminFormSchema.extend({
+      password: z.string().optional(),
+    })
+    : adminFormSchema
+
+  const initialValues: AdminFormProps = useMemo(
+    () => ({
+      firstName: defaultValues?.firstName ?? '',
+      lastName: defaultValues?.lastName ?? '',
+      email: defaultValues?.email ?? '',
+      username: defaultValues?.username ?? '',
+      mobile: defaultValues?.mobile ?? '',
+      password: defaultValues?.password ?? '',
+      roleId: defaultValues?.roleId ?? '',
+    }),
+    [defaultValues]
+  )
+
   const { roles, isPending: isLoadingRoles } = useRoles()
   const queryClient = useQueryClient()
+  const refreshAdminsList = () => {
+    queryClient.invalidateQueries({
+      queryKey: adminQueryKeys.all,
+    })
+    queryClient.refetchQueries({
+      queryKey: adminQueryKeys.all,
+      type: 'active',
+    })
+  }
+  const handleMutationSuccess = () => {
+    // Parent can coordinate refresh/close flow; otherwise fallback to local refresh.
+    if (onSuccess) {
+      onSuccess()
+      return
+    }
+    refreshAdminsList()
+  }
+
   const form = useForm<AdminFormProps>({
-    resolver: zodResolver(adminFormSchema),
+    resolver: zodResolver(formSchema) as any,
     mode: 'all',
-    defaultValues: {
-      firstName: '',
-      lastName: '',
-      email: '',
-      username: '',
-      phone: '',
-      password: '',
-      roleId: '',
-    },
+    defaultValues: initialValues,
   })
 
-
-
-
-
+  useEffect(() => {
+    form.reset(initialValues)
+  }, [form, initialValues])
 
   const { mutate: mutateCreateAdmin, isPending: isCreating } = useCustomMutation<unknown, AdminFormProps>({
     key: ['admins', 'create'],
     method: 'post',
     url: endpoints.admins.create(),
-    onSuccess: () => { 
-      
-      
-      queryClient.invalidateQueries({ queryKey: ['admins', 'list']  }) }
-
-      // key: (page: number) => ['admins',{page: page.toString()}],
+    onSuccess: () => {
+      handleMutationSuccess()
+    },
   })
 
-
-
-
-
-
-
-
-
-
-
-
+  const { mutate: mutateEditAdmin, isPending: isUpdating } = useCustomMutation<unknown, AdminFormProps & { id: string }>({
+    key: ['admins', 'edit'],
+    method: 'put',
+    url: endpoints.admins.update(),
+    onSuccess: () => {
+      handleMutationSuccess()
+    },
+  })
 
   const handleSubmit = (data: AdminFormProps) => {
-    console.log(data, '11111111111111111')
+    const payload = isEditMode ? { ...data, password: '', id: editId ?? '' } : data
+
     if (onSubmit) {
-      onSubmit(data)
-    } else {
-      mutateCreateAdmin(data)
+      Promise.resolve(onSubmit(payload)).then(() => {
+        onSuccess?.()
+      })
+      return
     }
+
+    if (isEditMode) {
+      if (!editId) {
+        return
+      }
+      mutateEditAdmin({ ...payload, id: editId })
+      return
+    }
+
+    mutateCreateAdmin(payload)
   }
 
   return (
@@ -77,9 +121,11 @@ export function AdminForm({
       form={form}
       onSubmit={handleSubmit}
       onCancel={onCancel}
-      isPending={isCreating}
+      isPending={isPending || isCreating || isUpdating}
       roles={roles}
       isLoadingRoles={isLoadingRoles}
+      showPassword={!isEditMode}
+      submitLabel={isEditMode ? 'Edit Admin' : 'Create Admin'}
     />
   )
 }

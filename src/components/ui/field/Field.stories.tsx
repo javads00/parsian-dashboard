@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
-import { Button } from '../button/Button'
-import { Input } from '../input/Input'
+import { Button } from '../forms/button/Button'
+import { Input } from '../forms/input/Input'
 import {
   Field,
   FieldContent,

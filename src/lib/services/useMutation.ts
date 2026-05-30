@@ -19,6 +19,9 @@ export function useCustomMutation<T, B = unknown, E = unknown>({
 }: UseMutationOptionsProps<T, B, E>) {
   return useMutation<ApiResponse<T>, E, B>({
     mutationKey: key,
+    meta: {
+      method: method?.toLowerCase(),
+    },
     mutationFn: (body: B) =>
       requestFn ? requestFn(body) : request<T, B>(apiClient, method as "post" | "put" | "patch" | "delete", url as string, body, headers),
     onSuccess: (data) => onSuccess?.(data),
@@ -40,6 +43,9 @@ export function useCustomMutationPaginationQuery<T, B = unknown, E = unknown>({
 
   const mutationResult = useMutation<ApiResponse<T>, E, B>({
     mutationKey: key(page),
+    meta: {
+      method: method?.toLowerCase(),
+    },
     mutationFn: (body: B) =>
       requestFn ? requestFn(body) : request<T, B>(apiClient, method as "post" | "put" | "patch" | "delete", finalUrl, body, headers),
     onSuccess: (data) => onSuccess?.(data),

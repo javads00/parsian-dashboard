@@ -64,7 +64,7 @@ export interface UseInfiniteQueryOptionsProps<T> {
 
 export interface UsePaginationQueryOptionsProps<T> {
   url: (page: number) => string
-  key: (page: number) => string[] | Array<string | object>
+  key: (page: number) => any
   options?: Omit<UseQueryOptions<ApiResponse<T>, Error>, 'queryKey' | 'queryFn'>
   headers?: HeadersInit
 }

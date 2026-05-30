@@ -39,7 +39,8 @@ function SideBarUi({ currentItem }: SideBarUiProps) {
   return (
     <SidebarProvider defaultOpen={true}>
       <SideBarComponent />
-      <main className="mx-auto w-full max-w-7xl px-4 py-2">
+      <main className="bg-layout-bg mx-auto min-h-screen w-full max-w-7xl px-4 py-2">
+        {' '}
         <HeaderComponent currentItem={currentItem} />
         <Outlet />
       </main>

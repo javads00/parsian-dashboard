@@ -158,6 +158,7 @@ export const Default: Story = {
   ),
 }
 
+
 export const WithSearch: Story = {
   render: () => (
     <div className="flex min-h-screen w-full">
@@ -452,7 +453,7 @@ export const ComplexMenu: Story = {
                     <InboxIcon />
                     <span>Inbox</span>
                     <div className="bg-sidebar-primary text-sidebar-primary-foreground ml-auto flex h-5 min-w-5 items-center justify-center rounded text-xs font-medium tabular-nums">
-                      12
+                      12 
                     </div>
                   </SidebarMenuButton>
                 </SidebarMenuItem>

@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
-import { Button } from '../button/Button'
-import { InputGroup, InputGroupInput } from '../inputGroup/InputGroup'
+import { Button } from '../forms/button/Button'
+import { InputGroup, InputGroupInput } from '../forms/inputGroup/InputGroup'
 import {
   Popover,
   PopoverContent,

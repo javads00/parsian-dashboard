@@ -1,9 +1,15 @@
-import { Button } from '@/components/ui/button'
-import { type Admin } from '@/typescript'
+import { Button } from '@/components/ui/forms/button'
+import type { TRole } from '@/typescript'
 import { type ColumnDef } from '@tanstack/react-table'
-import { EyeIcon, PencilIcon, Trash2Icon } from 'lucide-react'
+import { PencilIcon, Trash2Icon } from 'lucide-react'
 
-export const createColumns = (page: number = 1, limit: number = 10): ColumnDef<Admin>[] => [
+export const createColumns = (
+  page: number = 1,
+  limit: number = 10,
+  _onViewClick?: (role: TRole) => void,
+  onEditClick?: (role: TRole) => void,
+  onDeleteClick?: (id: string) => void
+): ColumnDef<TRole>[] => [
   {
     accessorKey: 'id',
     header: 'ID',
@@ -12,75 +18,54 @@ export const createColumns = (page: number = 1, limit: number = 10): ColumnDef<A
       return <div>{rowNumber}</div>
     },
   },
-  {
-    accessorKey: 'firstName',
-    header: 'Name',
-    cell: ({ row }) => {
-      return (
-        <div className="flex flex-col items-center gap-1">
-          <span>{row?.original?.firstName}</span>
-        </div>
-      )
-    },
-  },
-  {
-    accessorKey: 'lastName',
-    header: 'Family',
-    cell: ({ row }) => {
-      return <div>{row.original.lastName}</div>
-    },
-  },
-
 
   {
-    accessorKey: 'username',
-    header: 'Username',
-    cell: ({ row }) => {
-      return <div>{row.original.username}</div>
-    },
-  },
-
-
-  {
-    accessorKey: 'email',
-    header: 'Email',
-    cell: ({ row }) => {
-      return <div>{row.original.email}</div>
-    },
+    accessorKey: 'name',
+    header: 'Role Name',
+    cell: ({ row }) => <div>{row.original.name}</div>,
   },
 
   {
-    accessorKey: 'roleId',
-    header: 'Role',
-    cell: ({ row }) => {
-      return <div>{row.original.roleId.name}</div>
-    },
+    accessorKey: 'fullAccess',
+    header: 'Full Access',
+    cell: ({ row }) => <div>{row.original.fullAccess ? 'Yes' : 'No'}</div>,
   },
 
   {
-    accessorKey: 'createdAt',
-    header: 'Created At',
+    accessorKey: 'permissions',
+    header: 'Permissions',
     cell: ({ row }) => {
-      const date = row.original.createdAt ? new Date(row.original.createdAt) : null
-      return <div>{date ? date.toMiladi() : '-'}</div>
+      const permissions = row.original.permissions || []
+      const permissionSummary = permissions.map(p => `${p.resource} (${p.actions.canCreate ? 'C' : ''}${p.actions.canRead ? 'R' : ''}${p.actions.canEdit ? 'U' : ''}${p.actions.canDelete ? 'D' : ''})`).join(', ')
+      return <div className="text-sm text-muted-foreground max-w-xs truncate" title={permissionSummary}>{permissionSummary || 'No permissions'}</div>
     },
   },
+
   {
     accessorKey: 'action',
     header: 'Action',
     cell: ({ row }) => {
+      const role = row.original as TRole & { _id?: string }
+      const roleId = role.id ?? role._id
+      const roleWithId = roleId ? { ...role, id: roleId } : role
       return (
-        <div className="flex gap-2">
-          <Button variant="outline" size="icon">
-            <EyeIcon className="h-4 w-4" />
-          </Button>
-          <Button variant="outline" size="icon">
-            <PencilIcon className="h-4 w-4" />
-          </Button>
-          <Button variant="outline" size="icon">
-            <Trash2Icon className="h-4 w-4" />
-          </Button>
-        </div>
+      <div className="flex gap-2">
+        <Button
+          variant="outline"
+          size="icon"
+          onClick={() => onEditClick?.(roleWithId)}
+        >
+          <PencilIcon className="h-4 w-4" />
+        </Button>
+        <Button
+          variant="outline"
+          size="icon"
+          onClick={() => roleId && onDeleteClick?.(roleId)}
+          disabled={!roleId}
+        >
+          <Trash2Icon className="h-4 w-4" />
+        </Button>
+      </div>
       )
     },
   },

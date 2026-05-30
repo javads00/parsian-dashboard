@@ -1,4 +1,4 @@
-import type { AuthorizedUser } from '@/components'
+import type { AuthorizedUser } from '@/typescript'
 import { Button, Field, FieldError, FieldGroup, FieldLabel, Input, PasswordInput } from '@/components'
 import { type LoginFormProps } from '@/lib'
 import { Controller, type UseFormReturn } from 'react-hook-form'

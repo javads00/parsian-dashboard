@@ -1,10 +1,12 @@
 import type { MENU_ITEMS } from '@/data'
-import type { useLocation } from '@tanstack/react-router'
+import type { MenuItem } from '@/typescript'
+import type { ParsedLocation } from '@tanstack/react-router'
 
 export type SideBarComponentProps = {
+  menuItems: MenuItem[]
   isSigningOut: boolean
-  handleSignOut: () => void
-  location: ReturnType<typeof useLocation>
+  handleSignOut: () => Promise<void>
+  location: ParsedLocation
 }
 
 export type SideBarUiProps = {

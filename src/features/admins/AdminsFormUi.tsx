@@ -1,8 +1,8 @@
 import { Input, PasswordInput, Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components'
-import { FormController, FormWrapper } from '@/components/ui/formWrapper'
+import { FormController, FormWrapper } from '@/components/ui/forms/formWrapper'
 import { type AdminFormProps } from '@/lib'
 import { type UseFormReturn } from 'react-hook-form'
-import type { Role } from '@/typescript'
+import type { TRole } from '@/typescript'
 
 export default function AdminsFormUi({
     form,
@@ -11,13 +11,17 @@ export default function AdminsFormUi({
     isPending,
     roles,
     isLoadingRoles,
+    showPassword = true,
+    submitLabel = 'Create Admin',
 }: {
     form: UseFormReturn<AdminFormProps>
     onSubmit: (data: AdminFormProps) => void
     onCancel: () => void
     isPending: boolean
-    roles: Role[]
+    roles: TRole[]
     isLoadingRoles?: boolean
+    showPassword?: boolean
+    submitLabel?: string
 }) {
     return (
         <div className="flex h-full flex-col bg-background">
@@ -42,7 +46,7 @@ export default function AdminsFormUi({
                 onSubmit={onSubmit}
                 onCancel={onCancel}
                 isPending={isPending}
-                submitLabel="Create Admin"
+                submitLabel={submitLabel}
                 twoColumns
             >
                 {/* Section: Personal Info */}
@@ -56,6 +60,7 @@ export default function AdminsFormUi({
                     {({ field, fieldState }) => (
                         <Input
                             {...field}
+                            value={field.value ?? ''}
                             placeholder="e.g. John"
                             aria-invalid={fieldState.invalid}
                         />
@@ -66,6 +71,7 @@ export default function AdminsFormUi({
                     {({ field, fieldState }) => (
                         <Input
                             {...field}
+                            value={field.value ?? ''}
                             placeholder="e.g. Doe"
                             aria-invalid={fieldState.invalid}
                         />
@@ -83,6 +89,7 @@ export default function AdminsFormUi({
                     {({ field, fieldState }) => (
                         <Input
                             {...field}
+                            value={field.value ?? ''}
                             type="email"
                             placeholder="john@example.com"
                             aria-invalid={fieldState.invalid}
@@ -94,37 +101,42 @@ export default function AdminsFormUi({
                     {({ field, fieldState }) => (
                         <Input
                             {...field}
+                            value={field.value ?? ''}
                             placeholder="e.g. john_doe"
                             aria-invalid={fieldState.invalid}
                         />
                     )}
                 </FormController>
 
-                <FormController name="phone" label="Phone Number">
+                <FormController name="mobile" label="Mobile Number">
                     {({ field, fieldState }) => (
                         <Input
                             {...field}
+                            value={field.value ?? ''}
                             placeholder="+1 (555) 000-0000"
                             aria-invalid={fieldState.invalid}
                         />
                     )}
                 </FormController>
 
-                <FormController name="password" label="Password">
-                    {({ field, fieldState }) => (
-                        <PasswordInput
-                            {...field}
-                            placeholder="Enter password"
-                            autoComplete="new-password"
-                            aria-invalid={fieldState.invalid}
-                        />
-                    )}
-                </FormController>
+                {showPassword && (
+                    <FormController name="password" label="Password">
+                        {({ field, fieldState }) => (
+                            <PasswordInput
+                                {...field}
+                                value={field.value ?? ''}
+                                placeholder="Enter password"
+                                autoComplete="new-password"
+                                aria-invalid={fieldState.invalid}
+                            />
+                        )}
+                    </FormController>
+                )}
 
                 <FormController name="roleId" className='col-span-2' label="Role">
                     {({ field, fieldState }) => (
                         <Select
-                            value={field.value}
+                            value={field.value ?? ''}
                             onValueChange={field.onChange}
                             disabled={isLoadingRoles}
                         >

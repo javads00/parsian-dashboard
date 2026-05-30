@@ -15,29 +15,14 @@ export default function ReactQueryProvider(props: PropsWithChildren) {
     () =>
       new QueryClient({
         queryCache: new QueryCache({
-          onSuccess: (data) => {
-            if (
-              (data as ApiResponse<unknown>).status === 200 ||
-              (data as ApiResponse<unknown>).status === 201
-            ) {
-              // eslint-disable-next-line @typescript-eslint/no-unused-expressions
-              ; (data as ApiResponse<unknown>)?.message
-                ? toast.success(getSuccessMessage(data as ApiResponse<unknown>))
-                : null
-            } else {
-              // eslint-disable-next-line @typescript-eslint/no-unused-expressions
-              ; (data as ApiResponse<unknown>)?.message
-                ? toast.error(getSuccessMessage(data as ApiResponse<unknown>))
-                : null
-            }
-          },
-
-          onError: (error) => {
-            toast.error(error.message)
-          },
+          // Keep query (GET) operations silent globally.
+          // We only show toasts for mutations (create/update/delete).
         }),
         mutationCache: new MutationCache({
-          onSuccess: (data) => {
+          onSuccess: (data, _variables, _context, mutation) => {
+            const method = String(mutation.options.meta?.method ?? '').toLowerCase()
+            if (method === 'get') return
+
             if (
               (data as ApiResponse<unknown>).status === 200 ||
               (data as ApiResponse<unknown>).status === 201
@@ -54,7 +39,9 @@ export default function ReactQueryProvider(props: PropsWithChildren) {
             }
           },
 
-          onError: (error) => {
+          onError: (error, _variables, _context, mutation) => {
+            const method = String(mutation.options.meta?.method ?? '').toLowerCase()
+            if (method === 'get') return
             toast.error(error.message)
           },
         }),

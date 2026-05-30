@@ -55,6 +55,8 @@ export async function request<T, B = unknown>(
     throwHttpErrors: false,
   })
 
+  console.log(response, 'response[method]')
+
   const json = await response.json<{ data: T; message?: string; pages?: number }>()
 
   if (!response.ok) {

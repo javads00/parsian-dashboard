@@ -45,7 +45,7 @@ export function DataTable<TData, TValue>({
     getCoreRowModel: getCoreRowModel(),
   })
 
-  const isLoading = loading || (!data.length && loading !== false)
+  const isLoading = loading || (!data?.length && loading !== false)
 
   return (
     <>

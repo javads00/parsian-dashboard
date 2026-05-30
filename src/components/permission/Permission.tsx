@@ -17,7 +17,7 @@ export default function Permission({
   ...roles
 }: PermissionProps) {
   const { user } = useAuthStore()
-  const role = user?.roleID?.key as Role | undefined
+  const role = user?.roleId?.name?.toLowerCase() as Role | undefined
 
   const activeRoles: Role[] =
     allowedRoles ?? (Object.keys(roles).filter((k) => roles[k as keyof typeof roles]) as Role[])
