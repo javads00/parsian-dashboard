@@ -4,3 +4,5 @@ export * from './roleStatusAccess'
 export * from './auth'
 export * from './label'
 export * from './global.type'
+
+export * from './releaseApp'

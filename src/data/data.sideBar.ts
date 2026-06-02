@@ -7,6 +7,9 @@ export const EnumResourceType = {
   Label: 'Label',
   OrderStatus: 'OrderStatus',
   Country: 'Country',
+  RoleStatusAccess: 'RoleStatusAccess',
+  RoleMapping: 'RoleMapping',
+  ReleaseApp: 'ReleaseApp',
 } as const
 
 export type TResource = (typeof EnumResourceType)[keyof typeof EnumResourceType]
@@ -55,5 +58,27 @@ export const MENU_ITEMS: MenuItem[] = [
     key: EnumResourceType.Country,
     breadCrumb: ['Dashboard', 'Country'],
     icon: 'Globe',
+  },
+  {
+    title: 'RoleStatusAccess',
+    url: '/dashboard/roleStatusAccess',
+    key: EnumResourceType.RoleStatusAccess,
+    breadCrumb: ['Dashboard', 'RoleStatusAccess'],
+    icon: 'Package',
+  },
+  {
+    title: 'RoleMapping',
+    url: '/dashboard/roleMapping',
+    key: EnumResourceType.RoleMapping,
+    breadCrumb: ['Dashboard', 'RoleMapping'],
+    icon: 'ListOrdered',
+  },
+
+  {
+    title: 'ReleaseApp',
+    url: '/dashboard/releaseApp',
+    key: EnumResourceType.ReleaseApp,
+    breadCrumb: ['Dashboard', 'ReleaseApp'],
+    icon: 'ListOrdered',
   },
 ]

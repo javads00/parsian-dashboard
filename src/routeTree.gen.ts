@@ -14,7 +14,10 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as LoginIndexRouteImport } from './routes/login/index'
 import { Route as AuthenticatedDashboardRouteRouteImport } from './routes/_authenticated/dashboard/route'
 import { Route as AuthenticatedDashboardIndexRouteImport } from './routes/_authenticated/dashboard/index'
+import { Route as AuthenticatedDashboardRoleStatusMappingIndexRouteImport } from './routes/_authenticated/dashboard/roleStatusMapping/index'
+import { Route as AuthenticatedDashboardRoleStatusAccessIndexRouteImport } from './routes/_authenticated/dashboard/roleStatusAccess/index'
 import { Route as AuthenticatedDashboardRoleIndexRouteImport } from './routes/_authenticated/dashboard/role/index'
+import { Route as AuthenticatedDashboardReleaseAppIndexRouteImport } from './routes/_authenticated/dashboard/releaseApp/index'
 import { Route as AuthenticatedDashboardOrderStatusIndexRouteImport } from './routes/_authenticated/dashboard/orderStatus/index'
 import { Route as AuthenticatedDashboardLabelIndexRouteImport } from './routes/_authenticated/dashboard/label/index'
 import { Route as AuthenticatedDashboardCountryIndexRouteImport } from './routes/_authenticated/dashboard/country/index'
@@ -46,10 +49,28 @@ const AuthenticatedDashboardIndexRoute =
     path: '/',
     getParentRoute: () => AuthenticatedDashboardRouteRoute,
   } as any)
+const AuthenticatedDashboardRoleStatusMappingIndexRoute =
+  AuthenticatedDashboardRoleStatusMappingIndexRouteImport.update({
+    id: '/roleStatusMapping/',
+    path: '/roleStatusMapping/',
+    getParentRoute: () => AuthenticatedDashboardRouteRoute,
+  } as any)
+const AuthenticatedDashboardRoleStatusAccessIndexRoute =
+  AuthenticatedDashboardRoleStatusAccessIndexRouteImport.update({
+    id: '/roleStatusAccess/',
+    path: '/roleStatusAccess/',
+    getParentRoute: () => AuthenticatedDashboardRouteRoute,
+  } as any)
 const AuthenticatedDashboardRoleIndexRoute =
   AuthenticatedDashboardRoleIndexRouteImport.update({
     id: '/role/',
     path: '/role/',
+    getParentRoute: () => AuthenticatedDashboardRouteRoute,
+  } as any)
+const AuthenticatedDashboardReleaseAppIndexRoute =
+  AuthenticatedDashboardReleaseAppIndexRouteImport.update({
+    id: '/releaseApp/',
+    path: '/releaseApp/',
     getParentRoute: () => AuthenticatedDashboardRouteRoute,
   } as any)
 const AuthenticatedDashboardOrderStatusIndexRoute =
@@ -86,7 +107,10 @@ export interface FileRoutesByFullPath {
   '/dashboard/country/': typeof AuthenticatedDashboardCountryIndexRoute
   '/dashboard/label/': typeof AuthenticatedDashboardLabelIndexRoute
   '/dashboard/orderStatus/': typeof AuthenticatedDashboardOrderStatusIndexRoute
+  '/dashboard/releaseApp/': typeof AuthenticatedDashboardReleaseAppIndexRoute
   '/dashboard/role/': typeof AuthenticatedDashboardRoleIndexRoute
+  '/dashboard/roleStatusAccess/': typeof AuthenticatedDashboardRoleStatusAccessIndexRoute
+  '/dashboard/roleStatusMapping/': typeof AuthenticatedDashboardRoleStatusMappingIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -96,7 +120,10 @@ export interface FileRoutesByTo {
   '/dashboard/country': typeof AuthenticatedDashboardCountryIndexRoute
   '/dashboard/label': typeof AuthenticatedDashboardLabelIndexRoute
   '/dashboard/orderStatus': typeof AuthenticatedDashboardOrderStatusIndexRoute
+  '/dashboard/releaseApp': typeof AuthenticatedDashboardReleaseAppIndexRoute
   '/dashboard/role': typeof AuthenticatedDashboardRoleIndexRoute
+  '/dashboard/roleStatusAccess': typeof AuthenticatedDashboardRoleStatusAccessIndexRoute
+  '/dashboard/roleStatusMapping': typeof AuthenticatedDashboardRoleStatusMappingIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -109,7 +136,10 @@ export interface FileRoutesById {
   '/_authenticated/dashboard/country/': typeof AuthenticatedDashboardCountryIndexRoute
   '/_authenticated/dashboard/label/': typeof AuthenticatedDashboardLabelIndexRoute
   '/_authenticated/dashboard/orderStatus/': typeof AuthenticatedDashboardOrderStatusIndexRoute
+  '/_authenticated/dashboard/releaseApp/': typeof AuthenticatedDashboardReleaseAppIndexRoute
   '/_authenticated/dashboard/role/': typeof AuthenticatedDashboardRoleIndexRoute
+  '/_authenticated/dashboard/roleStatusAccess/': typeof AuthenticatedDashboardRoleStatusAccessIndexRoute
+  '/_authenticated/dashboard/roleStatusMapping/': typeof AuthenticatedDashboardRoleStatusMappingIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -122,7 +152,10 @@ export interface FileRouteTypes {
     | '/dashboard/country/'
     | '/dashboard/label/'
     | '/dashboard/orderStatus/'
+    | '/dashboard/releaseApp/'
     | '/dashboard/role/'
+    | '/dashboard/roleStatusAccess/'
+    | '/dashboard/roleStatusMapping/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -132,7 +165,10 @@ export interface FileRouteTypes {
     | '/dashboard/country'
     | '/dashboard/label'
     | '/dashboard/orderStatus'
+    | '/dashboard/releaseApp'
     | '/dashboard/role'
+    | '/dashboard/roleStatusAccess'
+    | '/dashboard/roleStatusMapping'
   id:
     | '__root__'
     | '/'
@@ -144,7 +180,10 @@ export interface FileRouteTypes {
     | '/_authenticated/dashboard/country/'
     | '/_authenticated/dashboard/label/'
     | '/_authenticated/dashboard/orderStatus/'
+    | '/_authenticated/dashboard/releaseApp/'
     | '/_authenticated/dashboard/role/'
+    | '/_authenticated/dashboard/roleStatusAccess/'
+    | '/_authenticated/dashboard/roleStatusMapping/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -190,11 +229,32 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedDashboardIndexRouteImport
       parentRoute: typeof AuthenticatedDashboardRouteRoute
     }
+    '/_authenticated/dashboard/roleStatusMapping/': {
+      id: '/_authenticated/dashboard/roleStatusMapping/'
+      path: '/roleStatusMapping'
+      fullPath: '/dashboard/roleStatusMapping/'
+      preLoaderRoute: typeof AuthenticatedDashboardRoleStatusMappingIndexRouteImport
+      parentRoute: typeof AuthenticatedDashboardRouteRoute
+    }
+    '/_authenticated/dashboard/roleStatusAccess/': {
+      id: '/_authenticated/dashboard/roleStatusAccess/'
+      path: '/roleStatusAccess'
+      fullPath: '/dashboard/roleStatusAccess/'
+      preLoaderRoute: typeof AuthenticatedDashboardRoleStatusAccessIndexRouteImport
+      parentRoute: typeof AuthenticatedDashboardRouteRoute
+    }
     '/_authenticated/dashboard/role/': {
       id: '/_authenticated/dashboard/role/'
       path: '/role'
       fullPath: '/dashboard/role/'
       preLoaderRoute: typeof AuthenticatedDashboardRoleIndexRouteImport
+      parentRoute: typeof AuthenticatedDashboardRouteRoute
+    }
+    '/_authenticated/dashboard/releaseApp/': {
+      id: '/_authenticated/dashboard/releaseApp/'
+      path: '/releaseApp'
+      fullPath: '/dashboard/releaseApp/'
+      preLoaderRoute: typeof AuthenticatedDashboardReleaseAppIndexRouteImport
       parentRoute: typeof AuthenticatedDashboardRouteRoute
     }
     '/_authenticated/dashboard/orderStatus/': {
@@ -234,7 +294,10 @@ interface AuthenticatedDashboardRouteRouteChildren {
   AuthenticatedDashboardCountryIndexRoute: typeof AuthenticatedDashboardCountryIndexRoute
   AuthenticatedDashboardLabelIndexRoute: typeof AuthenticatedDashboardLabelIndexRoute
   AuthenticatedDashboardOrderStatusIndexRoute: typeof AuthenticatedDashboardOrderStatusIndexRoute
+  AuthenticatedDashboardReleaseAppIndexRoute: typeof AuthenticatedDashboardReleaseAppIndexRoute
   AuthenticatedDashboardRoleIndexRoute: typeof AuthenticatedDashboardRoleIndexRoute
+  AuthenticatedDashboardRoleStatusAccessIndexRoute: typeof AuthenticatedDashboardRoleStatusAccessIndexRoute
+  AuthenticatedDashboardRoleStatusMappingIndexRoute: typeof AuthenticatedDashboardRoleStatusMappingIndexRoute
 }
 
 const AuthenticatedDashboardRouteRouteChildren: AuthenticatedDashboardRouteRouteChildren =
@@ -248,7 +311,13 @@ const AuthenticatedDashboardRouteRouteChildren: AuthenticatedDashboardRouteRoute
       AuthenticatedDashboardLabelIndexRoute,
     AuthenticatedDashboardOrderStatusIndexRoute:
       AuthenticatedDashboardOrderStatusIndexRoute,
+    AuthenticatedDashboardReleaseAppIndexRoute:
+      AuthenticatedDashboardReleaseAppIndexRoute,
     AuthenticatedDashboardRoleIndexRoute: AuthenticatedDashboardRoleIndexRoute,
+    AuthenticatedDashboardRoleStatusAccessIndexRoute:
+      AuthenticatedDashboardRoleStatusAccessIndexRoute,
+    AuthenticatedDashboardRoleStatusMappingIndexRoute:
+      AuthenticatedDashboardRoleStatusMappingIndexRoute,
   }
 
 const AuthenticatedDashboardRouteRouteWithChildren =

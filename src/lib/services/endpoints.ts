@@ -28,6 +28,11 @@ export const endpoints = {
     key: (page: number, limit: number) => ['roles', page.toString(), limit.toString()],
   },
 
+  rolesClient: {
+    getList: () => `${API_URL}/Role`,
+    getListKey: () => ['roles', 'getList'],
+  },
+
   label: {
     list: (page: number, limit: number) => `${API_URL}/Label?page=${page}&limit=${limit}`,
     create: () => `${API_URL}/Label`,
@@ -55,17 +60,54 @@ export const endpoints = {
     list: (page: number, limit: number) => `${API_URL}/OrderStatus?page=${page}&limit=${limit}`,
     create: () => `${API_URL}/OrderStatus`,
     find: (id: string) => `${API_URL}/OrderStatus?id=${id}`,
+    findAll: () => `${API_URL}/OrderStatus/all`,
     update: () => `${API_URL}/OrderStatus`,
     delete: () => `${API_URL}/OrderStatus`,
     createKey: () => ['OrderStatus', 'create'],
     deleteKey: (id: string) => ['OrderStatus', 'delete', id],
+    findAllKey: () => ['OrderStatus', 'findAll'],
     key: (page: number, limit: number) => ['OrderStatus', page.toString(), limit.toString()],
+  },
+
+  roleStatusAccess: {
+    list: (page: number, limit: number) =>
+      `${API_URL}/RoleStatusAccess?page=${page}&limit=${limit}`,
+    create: () => `${API_URL}/RoleStatusAccess`,
+    find: (id: string) => `${API_URL}/RoleStatusAccess?id=${id}`,
+    update: () => `${API_URL}/RoleStatusAccess`,
+    delete: () => `${API_URL}/RoleStatusAccess`,
+    createKey: () => ['RoleStatusAccess', 'create'],
+    deleteKey: (id: string) => ['RoleStatusAccess', 'delete', id],
+    key: (page: number, limit: number) => ['RoleStatusAccess', page.toString(), limit.toString()],
+  },
+
+  roleStatusMapping: {
+    list: (page: number, limit: number) =>
+      `${API_URL}/RoleStatusMapping?page=${page}&limit=${limit}`,
+    create: () => `${API_URL}/RoleStatusMapping`,
+    find: (id: string) => `${API_URL}/RoleStatusMapping?id=${id}`,
+    update: () => `${API_URL}/RoleStatusMapping`,
+    delete: () => `${API_URL}/RoleStatusMapping`,
+    createKey: () => ['RoleStatusMapping', 'create'],
+    deleteKey: (id: string) => ['RoleStatusMapping', 'delete', id],
+    key: (page: number, limit: number) => ['RoleStatusMapping', page.toString(), limit.toString()],
   },
 
   orders: {
     list: (page: number, limit: number) => `${API_URL}/Order/test?page=${page}&limit=${limit}`,
     status: () => `${API_URL}/OrderStatus`,
     key: (page: number, limit: number) => ['orders', page.toString(), limit.toString()],
+  },
+
+  releaseApp: {
+    list: (page: number, limit: number) => `${API_URL}/Release?page=${page}&limit=${limit}`,
+    create: () => `${API_URL}/Release`,
+    find: (id: string) => `${API_URL}/Release?id=${id}`,
+    update: () => `${API_URL}/Release`,
+    delete: () => `${API_URL}/Release`,
+    createKey: () => ['Release', 'create'],
+    deleteKey: () => ['Release', 'delete'],
+    key: (page: number, limit: number) => ['Release', page.toString(), limit.toString()],
   },
 } as const satisfies Record<string, Record<string, EndpointEntry>>
 

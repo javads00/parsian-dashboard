@@ -24,3 +24,7 @@ export type TCountry = {
 export type TGlobalPayload = {
   id: string
 }
+
+
+
+

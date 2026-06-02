@@ -41,3 +41,13 @@ export type TRole = {
   createdAt: Date
   updatedAt: Date
 }
+
+export type TRoleClient = {
+  id: string
+  name: string
+  key: string
+  inOffice: boolean
+  priority: number
+  createdAt: Date
+  updatedAt: Date
+}

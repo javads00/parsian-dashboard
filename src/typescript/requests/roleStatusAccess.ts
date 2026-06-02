@@ -1,4 +1,5 @@
-import type { TRole } from './role'
+import type { TStatusOrder } from './global.type'
+import type { TRole, TRoleClient } from './role'
 
 export type TOrderStatus = {
   id: string
@@ -29,6 +30,37 @@ export type RoleStatusAccessFilters = {
 export type RoleStatusAccessFormValues = {
   roleId: string
   fullAccess: boolean
-  fromStatus: string
-  toStatus: string[]
+  fromStatus: string | null
+  statusId: string[]
+}
+
+export type TRoleStatusAccessClient = {
+  id: string
+  roleId: TRoleClient
+  fullAccess: boolean
+  fromStatus?: TStatusOrder | null
+  statusId: TStatusOrder[]
+  /** @deprecated API may still return this alias */
+  toStatus?: TStatusOrder[]
+  createdAt: Date
+  updatedAt: Date
+}
+
+export type TRoleStatusMapping = {
+  id: string
+  roleId: TRoleClient
+  visibleAs: TStatusOrder
+  originals: TStatusOrder[]
+  createdAt: Date
+}
+
+export type RoleStatusMappingFormValues = {
+  roleId: string
+  visibleAs: string
+  originals: string[]
+}
+
+
+export type RoleStatusMappingFormDefaults = RoleStatusMappingFormValues & {
+  originalItemLabels: Record<string, string>
 }
