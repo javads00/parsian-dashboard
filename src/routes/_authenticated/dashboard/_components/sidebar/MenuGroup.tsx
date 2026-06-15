@@ -23,6 +23,9 @@ type MenuGroupProps = {
   onSelect?: (selection: MenuSelection) => void
 }
 
+
+
+
 function MenuGroupChild({
   parent,
   child,
@@ -57,6 +60,8 @@ function MenuGroupChild({
             })
           }
         >
+
+
           <span
             className={cn(
               'size-1.5 shrink-0 rounded-full bg-sidebar-foreground/30 transition-colors',
