@@ -14,8 +14,6 @@ type MenuLinkProps = {
   onSelect?: (selection: MenuSelection) => void
 }
 
-
-
 type MenuChildLinkProps = {
   parent: MenuItemType
   child: MenuItemChild

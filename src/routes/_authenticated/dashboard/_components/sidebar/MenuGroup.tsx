@@ -23,9 +23,6 @@ type MenuGroupProps = {
   onSelect?: (selection: MenuSelection) => void
 }
 
-
-
-
 function MenuGroupChild({
   parent,
   child,
