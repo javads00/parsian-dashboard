@@ -1,10 +1,11 @@
-import { cva, type VariantProps } from 'class-variance-authority'
+import { cva } from 'class-variance-authority'
 import { useMemo } from 'react'
 
 import { cn } from '@/lib/utils'
 
 import { Label } from '../forms/label'
 import { Separator } from '../separator'
+import type { FieldProps } from '@/typescript/types/components'
 
 export function FieldSet({ className, ...props }: React.ComponentProps<'fieldset'>) {
   return (
@@ -53,7 +54,7 @@ export function FieldGroup({ className, ...props }: React.ComponentProps<'div'>)
   )
 }
 
-const fieldVariants = cva('group/field data-[invalid=true]:text-destructive flex w-full gap-3', {
+export const fieldVariants = cva('group/field data-[invalid=true]:text-destructive flex w-full gap-3', {
   variants: {
     orientation: {
       vertical: ['flex-col *:w-full [&>.sr-only]:w-auto'],
@@ -73,10 +74,6 @@ const fieldVariants = cva('group/field data-[invalid=true]:text-destructive flex
     orientation: 'vertical',
   },
 })
-
-export interface FieldProps
-  extends React.ComponentProps<'div'>,
-    VariantProps<typeof fieldVariants> {}
 
 export function Field({ className, orientation = 'vertical', ...props }: FieldProps) {
   return (

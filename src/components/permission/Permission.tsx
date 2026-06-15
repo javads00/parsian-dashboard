@@ -1,14 +1,5 @@
 import { useAuthStore } from '@/features'
-
-type Role = 'admin' | 'editor' | 'owner'
-
-type PermissionProps = {
-  allowedRoles?: Role[]
-  fallback?: React.ReactNode
-  children: React.ReactNode
-} & {
-  [key in Role]?: boolean
-}
+import type { PermissionProps, PermissionRole } from '@/typescript/types/components'
 
 export default function Permission({
   allowedRoles,
@@ -17,10 +8,10 @@ export default function Permission({
   ...roles
 }: PermissionProps) {
   const { user } = useAuthStore()
-  const role = user?.roleId?.name?.toLowerCase() as Role | undefined
+  const role = user?.roleId?.name?.toLowerCase() as PermissionRole | undefined
 
-  const activeRoles: Role[] =
-    allowedRoles ?? (Object.keys(roles).filter((k) => roles[k as keyof typeof roles]) as Role[])
+  const activeRoles: PermissionRole[] =
+    allowedRoles ?? (Object.keys(roles).filter((k) => roles[k as keyof typeof roles]) as PermissionRole[])
 
   const hasPermission = !!role && activeRoles.includes(role)
 

@@ -7,8 +7,7 @@ import {
 } from 'lucide-react'
 import { useTheme } from 'next-themes'
 import { Toaster as SonnerToaster, type ToasterProps } from 'sonner'
-
-export type ToasterPropsExtended = ToasterProps
+import type { ToasterPropsExtended } from '@/typescript/types/components'
 
 export function Toaster(props: ToasterPropsExtended) {
   const { theme = 'system' } = useTheme()

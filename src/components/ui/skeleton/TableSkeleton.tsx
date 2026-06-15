@@ -7,11 +7,7 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table/table'
-
-export interface TableSkeletonProps {
-  columns: number
-  rows?: number
-}
+import type { TableSkeletonProps } from '@/typescript/types/components'
 
 export function TableSkeleton({ columns, rows = 5 }: TableSkeletonProps) {
   return (

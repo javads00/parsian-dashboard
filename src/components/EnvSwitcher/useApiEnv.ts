@@ -1,16 +1,6 @@
-import {
-  getCurrentEnvKey,
-  getEnvOption,
-  subscribeToApiEnv,
-  type EnvKey,
-  type EnvOption,
-} from '@/utils/envConfig'
+import type { UseApiEnvResult } from '@/typescript/types/components'
+import { getCurrentEnvKey, getEnvOption, subscribeToApiEnv } from '@/utils/envConfig'
 import { useSyncExternalStore } from 'react'
-
-type UseApiEnvResult = {
-  envKey: EnvKey
-  envOption: EnvOption
-}
 
 export function useApiEnv(): UseApiEnvResult {
   const envKey = useSyncExternalStore(subscribeToApiEnv, getCurrentEnvKey, getCurrentEnvKey)

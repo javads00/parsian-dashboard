@@ -1,18 +1,7 @@
 import { memo, useMemo } from 'react'
-import { DataTable, TablePagination } from '@/components'
-import type { CrudTableMeta } from '@/lib/table/crudTableMeta'
-import type { ColumnDef } from '@tanstack/react-table'
-
-type CrudListTableProps<T extends { id: string }> = {
-  columns: ColumnDef<T, unknown>[]
-  rows: T[]
-  page: number
-  setPage: (page: number) => void
-  totalPages?: number
-  limit: number
-  loading?: boolean
-  meta: Pick<CrudTableMeta<T>, 'onEdit' | 'onDelete'>
-}
+import { TablePagination } from '@/components/common/TablePagination'
+import { DataTable } from '@/components/ui/dataTable/DataTable'
+import type { CrudListTableProps } from '@/typescript/types/components'
 
 function CrudListTableInner<T extends { id: string }>({
   columns,

@@ -6,7 +6,8 @@ import {
 } from "lucide-react"
 
 import { cn } from "@/lib/utils"
-import { buttonVariants, type Button } from "@/components/ui/forms/button"
+import { buttonVariants } from "@/components/ui/forms/button"
+import type { PaginationLinkProps } from '@/typescript/types/components'
 
 function Pagination({ className, ...props }: React.ComponentProps<"nav">) {
   return (
@@ -36,11 +37,6 @@ function PaginationContent({
 function PaginationItem({ ...props }: React.ComponentProps<"li">) {
   return <li data-slot="pagination-item" {...props} />
 }
-
-type PaginationLinkProps = {
-  isActive?: boolean
-} & Pick<React.ComponentProps<typeof Button>, "size"> &
-  React.ComponentProps<"a">
 
 function PaginationLink({
   className,

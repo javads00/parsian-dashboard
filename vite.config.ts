@@ -1,6 +1,5 @@
 /// <reference types="vitest/config" />
 import tailwindcss from '@tailwindcss/vite'
-import { tanstackRouter } from '@tanstack/router-plugin/vite'
 import react from '@vitejs/plugin-react'
 import path from 'path'
 import { defineConfig } from 'vite'
@@ -40,12 +39,7 @@ function sidebarThemePlugin(): Plugin {
 
 export default defineConfig({
   plugins: [
-    sidebarThemePlugin(), // 👈 اینو اضافه کن
-    tanstackRouter({
-      target: 'react',
-      autoCodeSplitting: true,
-      routeFileIgnorePattern: '_components',
-    }),
+    sidebarThemePlugin(),
     react({
       babel: {
         plugins: [['babel-plugin-react-compiler']],
@@ -60,6 +54,38 @@ export default defineConfig({
   },
   build: {
     outDir: 'build',
+    target: 'es2020',
+    cssMinify: true,
+    rollupOptions: {
+      output: {
+        experimentalMinChunkSize: 10_000,
+        manualChunks(id) {
+          if (!id.includes('node_modules')) return
+
+          if (id.includes('@tanstack/react-router-devtools')) return 'vendor-devtools'
+          if (id.includes('@tanstack')) return 'vendor-tanstack'
+
+          // Match only react core — avoid catching @tanstack/react-*, lucide-react, etc.
+          if (
+            /[/\\]node_modules[/\\]react[/\\]/.test(id) ||
+            /[/\\]node_modules[/\\]react-dom[/\\]/.test(id) ||
+            /[/\\]node_modules[/\\]scheduler[/\\]/.test(id)
+          ) {
+            return 'vendor-react'
+          }
+
+          if (id.includes('@radix-ui') || /[/\\]node_modules[/\\]radix-ui[/\\]/.test(id)) {
+            return 'vendor-radix'
+          }
+          if (id.includes('lucide-react')) return 'vendor-icons'
+          if (id.includes('date-fns') || id.includes('react-day-picker')) return 'vendor-dates'
+          if (id.includes('zod')) return 'vendor-zod'
+          if (id.includes('react-hook-form') || id.includes('@hookform')) return 'vendor-forms'
+
+          return 'vendor-misc'
+        },
+      },
+    },
   },
   resolve: {
     alias: {

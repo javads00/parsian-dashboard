@@ -3,16 +3,7 @@ import * as React from 'react'
 
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
 import { cn } from '@/lib/utils'
-
-type MultiSelectContextValue = {
-  value: string[]
-  toggleValue: (itemValue: string) => void
-  removeValue: (itemValue: string) => void
-  disabled?: boolean
-  registerItem: (itemValue: string, label: React.ReactNode) => void
-  unregisterItem: (itemValue: string) => void
-  getItemLabel: (itemValue: string) => React.ReactNode | undefined
-}
+import type { MultiSelectContextValue, MultiSelectProps } from '@/typescript/types/components'
 
 const MultiSelectContext = React.createContext<MultiSelectContextValue | null>(null)
 
@@ -22,19 +13,6 @@ function useMultiSelectContext() {
     throw new Error('MultiSelect components must be used within <MultiSelect>')
   }
   return context
-}
-
-type MultiSelectProps = {
-  value?: string[]
-  defaultValue?: string[]
-  onValueChange?: (value: string[]) => void
-  disabled?: boolean
-  open?: boolean
-  defaultOpen?: boolean
-  onOpenChange?: (open: boolean) => void
-  /** Pre-register labels for values (e.g. edit mode before options load) */
-  itemLabels?: Record<string, React.ReactNode>
-  children: React.ReactNode
 }
 
 function MultiSelect({

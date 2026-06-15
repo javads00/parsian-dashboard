@@ -1,8 +1,7 @@
 import * as React from 'react'
 
 import { cn } from '@/lib/utils'
-
-export type CardProps = React.ComponentProps<'div'>
+import type { CardProps } from '@/typescript/types/components'
 
 export function Card({ className, ...props }: CardProps) {
   return (

@@ -7,15 +7,7 @@ import { Calendar } from '@/components/ui/calendar'
 import { Input } from '@/components/ui/forms/input/Input'
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
 import { cn } from '@/lib/utils'
-
-export type DateTimeInputProps = {
-  value?: number
-  onChange: (value: number) => void
-  placeholder?: string
-  disabled?: boolean
-  className?: string
-  id?: string
-}
+import type { DateTimeInputProps } from '@/typescript/types/components'
 
 function timestampToDate(value?: number): Date | undefined {
   if (!value || value <= 0) return undefined

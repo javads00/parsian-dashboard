@@ -8,7 +8,7 @@ import {
   PaginationLink,
   PaginationNext,
   PaginationPrevious,
-} from '@/components'
+} from '@/components/ui/pagination/Pagination'
 import { Skeleton } from '@/components/ui/skeleton'
 import {
   Table,
@@ -19,25 +19,15 @@ import {
   TableRow,
 } from '@/components/ui/table/table'
 import {
-  type ColumnDef,
   flexRender,
   getCoreRowModel,
   useReactTable,
 } from '@tanstack/react-table'
+import type { DataTableProps } from '@/typescript/types/components'
 import { memo, useMemo } from 'react'
 
 const SKELETON_CELL_WIDTHS = ['w-24', 'w-36', 'w-28', 'w-44', 'w-20', 'w-32'] as const
 const PAGINATION_SKELETON_EDGE_PAGE_COUNT = 3
-
-export interface DataTableProps<TData, TValue> {
-  columns: ColumnDef<TData, TValue>[]
-  data: TData[]
-  loading?: boolean
-  skeletonRows?: number
-  pagination?: React.ReactNode
-  meta?: Record<string, unknown>
-  getRowId?: (row: TData) => string
-}
 
 function DataTableInner<TData, TValue>({
   columns,

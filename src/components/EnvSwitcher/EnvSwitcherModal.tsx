@@ -1,16 +1,9 @@
 import { cn } from '@/lib/utils'
-import type { EnvKey } from '@/utils/envConfig'
+import type { EnvSwitcherModalProps } from '@/typescript/types/components'
 import { AlertTriangle } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import { createPortal } from 'react-dom'
 import { formatDisplayUrl, getEnvLabel, getEnvStyle } from './envStyles'
-
-type EnvSwitcherModalProps = {
-  open: boolean
-  targetEnv: EnvKey | null
-  onCancel: () => void
-  onConfirm: () => void
-}
 
 export function EnvSwitcherModal({
   open,

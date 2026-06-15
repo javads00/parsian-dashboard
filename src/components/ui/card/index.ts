@@ -7,4 +7,4 @@ export {
   CardHeader,
   CardTitle,
 } from './Card'
-export type { CardProps } from './Card'
+export type { CardProps } from '@/typescript/types/components'

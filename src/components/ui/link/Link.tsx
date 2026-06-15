@@ -1,16 +1,9 @@
 import { Link as RouterLink, type LinkProps } from '@tanstack/react-router'
 import { cn } from '@/lib/utils'
-import type { MouseEventHandler, ReactNode } from 'react'
+import type { AppLinkProps } from '@/typescript/types/components'
 
 const navLinkActiveClass =
   'bg-[var(--sidebar-active-item)] text-sidebar-accent-foreground font-semibold shadow-sm'
-
-type AppLinkProps = Omit<LinkProps, 'to'> & {
-  to: LinkProps['to'] | string
-  children: ReactNode
-  className?: string
-  onClick?: MouseEventHandler<HTMLAnchorElement>
-}
 
 export function AppLink({ to, children, className, activeOptions, ...props }: AppLinkProps) {
   return (

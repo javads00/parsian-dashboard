@@ -1,12 +1,7 @@
 import { cn } from '@/lib/utils'
-import type { EnvKey } from '@/utils/envConfig'
+import type { EnvBadgeProps, EnvDotProps } from '@/typescript/types/components'
 import { ChevronDown } from 'lucide-react'
 import { getEnvLabel, getEnvStyle } from './envStyles'
-
-type EnvDotProps = {
-  envKey: EnvKey
-  size?: 'sm' | 'md'
-}
 
 export function EnvDot({ envKey, size = 'sm' }: EnvDotProps) {
   const style = getEnvStyle(envKey)
@@ -30,14 +25,6 @@ export function EnvDot({ envKey, size = 'sm' }: EnvDotProps) {
       />
     </span>
   )
-}
-
-type EnvBadgeProps = {
-  envKey: EnvKey
-  isOpen?: boolean
-  variant?: 'default' | 'login'
-  showApiPrefix?: boolean
-  className?: string
 }
 
 export function EnvBadge({

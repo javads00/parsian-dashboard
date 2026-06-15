@@ -1,19 +1,5 @@
+import type { EnvStyle } from '@/typescript/types/components'
 import { envMap, getEnvOption, type EnvKey } from '@/utils/envConfig'
-
-export type EnvStyle = {
-  dot: string
-  pulse: boolean
-  border: string
-  bg: string
-  bgHover: string
-  text: string
-  button: string
-  buttonHover: string
-  rowHover: string
-  rowActive: string
-  check: string
-  iconBg: string
-}
 
 export const ENV_STYLES: Record<EnvKey, EnvStyle> = {
   production: {

@@ -40,6 +40,25 @@ export const ENV_OPTIONS: EnvOption[] = [
   },
 ]
 
+export const isLocalEnvAvailable = import.meta.env.DEV
+
+export function getVisibleEnvOptions(): EnvOption[] {
+  if (isLocalEnvAvailable) {
+    return ENV_OPTIONS
+  }
+
+  return ENV_OPTIONS.filter((option) => option.key !== 'local')
+}
+
+function resolveProductionEnvKey(): EnvKey {
+  const fromBuild = resolveEnvFromUrl(import.meta.env.VITE_BASE_URL ?? '')
+  if (fromBuild && fromBuild !== 'local') {
+    return fromBuild
+  }
+
+  return 'production'
+}
+
 const ENV_CHANGE_EVENT = 'api-env-changed'
 
 function normalizeUrl(url: string): string {
@@ -68,7 +87,15 @@ export function getSavedEnvKey(): EnvKey | null {
 export function getCurrentEnvKey(): EnvKey {
   const saved = getSavedEnvKey()
   if (saved) {
+    if (saved === 'local' && !isLocalEnvAvailable) {
+      return resolveProductionEnvKey()
+    }
+
     return saved
+  }
+
+  if (import.meta.env.PROD) {
+    return resolveProductionEnvKey()
   }
 
   const fromBuild = resolveEnvFromUrl(import.meta.env.VITE_BASE_URL ?? '')
@@ -76,8 +103,7 @@ export function getCurrentEnvKey(): EnvKey {
 }
 
 export function getBaseUrl(): string {
-  const saved = getSavedEnvKey()
-  return saved ? envMap[saved] : (import.meta.env.VITE_BASE_URL ?? envMap.local)
+  return envMap[getCurrentEnvKey()]
 }
 
 export function getEnvOption(key: EnvKey): EnvOption {

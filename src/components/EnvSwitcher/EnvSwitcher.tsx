@@ -1,19 +1,14 @@
 import { useAuthStore } from '@/features'
 import { cn } from '@/lib/utils'
-import { ENV_OPTIONS, setApiEnv, type EnvKey } from '@/utils/envConfig'
+import { getVisibleEnvOptions, setApiEnv, type EnvKey } from '@/utils/envConfig'
 import { useNavigate } from '@tanstack/react-router'
 import { Check, Globe } from 'lucide-react'
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { EnvBadge, EnvDot } from './EnvBadge'
 import { formatDisplayUrl, getEnvLabel, getEnvStyle } from './envStyles'
 import { EnvSwitcherModal } from './EnvSwitcherModal'
+import type { EnvSwitcherProps } from '@/typescript/types/components'
 import { useApiEnv } from './useApiEnv'
-
-type EnvSwitcherProps = {
-  requireConfirmation?: boolean
-  variant?: 'default' | 'login'
-  className?: string
-}
 
 export function EnvSwitcher({
   requireConfirmation = true,
@@ -116,6 +111,7 @@ export function EnvSwitcher({
   }
 
   const isLogin = variant === 'login'
+  const visibleEnvOptions = getVisibleEnvOptions()
 
   return (
     <>
@@ -166,7 +162,7 @@ export function EnvSwitcher({
               </div>
 
               <div className="p-1.5">
-                {ENV_OPTIONS.map((option, index) => {
+                {visibleEnvOptions.map((option, index) => {
                   const style = getEnvStyle(option.key)
                   const isActive = envKey === option.key
 
@@ -207,7 +203,7 @@ export function EnvSwitcher({
                         />
                       </button>
 
-                      {index < ENV_OPTIONS.length - 1 && (
+                      {index < visibleEnvOptions.length - 1 && (
                         <div className="mx-3 border-t border-gray-100" />
                       )}
                     </div>

@@ -6,7 +6,8 @@ import {
   PaginationLink,
   PaginationNext,
   PaginationPrevious,
-} from '@/components'
+} from '@/components/ui/pagination/Pagination'
+import type { TablePaginationProps } from '@/typescript/types/components'
 
 const EDGE_PAGE_COUNT = 3
 
@@ -14,11 +15,7 @@ export function TablePagination({
   total,
   page = 1,
   onPageChange,
-}: {
-  total?: number
-  page: number
-  onPageChange?: (page: number) => void
-}) {
+}: TablePaginationProps) {
   if (total == null || total <= 1) return null
 
   const firstPages = Array.from(
