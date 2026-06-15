@@ -1,6 +1,6 @@
 import {
   Button,
-  DataTable,
+  CrudListTable,
   Dialog,
   DialogContent,
   DialogDescription,
@@ -11,18 +11,16 @@ import {
   SheetHeader,
   SheetTitle,
   SheetDescription,
-  Skeleton,
   DialogFooter,
 } from '@/components'
 import { createFileRoute } from '@tanstack/react-router'
-
 import { LabelForm } from '@/features/label'
-
-import { useCallback, useMemo, useRef, useState } from 'react'
-
-import { useDeleteLabel, useGetAdminsData } from '@/features/label/hooks'
-import { createColumns } from './_components/columns'
-
+import { useCallback, useMemo, useState } from 'react'
+import { useDeferredMount } from '@/hooks/useDeferredMount'
+import { useStableHandlers } from '@/hooks/useStableHandlers'
+import { useDeleteLabel, useGetLabelData } from '@/features/label/hooks'
+import { normalizeEntityId } from '@/lib/utils/normalizeEntityId'
+import { columns } from './_components/columns'
 import type { TLabel } from '@/typescript'
 
 export const Route = createFileRoute('/_authenticated/dashboard/label/')({
@@ -30,95 +28,58 @@ export const Route = createFileRoute('/_authenticated/dashboard/label/')({
 })
 
 function LabelPage() {
-  const { data, isPending, page, setPage, refetch, dataUpdatedAt } = useGetAdminsData()
+  const { rows, page, setPage, limit, totalPages, isInitialLoading } = useGetLabelData()
   const [deleteId, setDeleteId] = useState<string | null>(null)
-
-  const rafRef = useRef<number | null>(null)
-
-  const openCreate = useCallback(() => {
-    setSheet({ open: true, label: null })
-  }, [])
-
-  const [sheet, setSheet] = useState<{
-    open: boolean
-    label: TLabel | null
-  }>({
+  const [sheet, setSheet] = useState<{ open: boolean; label: TLabel | null }>({
     open: false,
     label: null,
   })
 
-  const openEdit = useCallback((label: TLabel) => {
-    const normalizedLabel = label as TLabel & { _id?: string }
-    const normalizedId = normalizedLabel.id ?? normalizedLabel._id
-    setSheet({
-      open: true,
-      label: normalizedId ? ({ ...normalizedLabel, id: normalizedId } as TLabel) : normalizedLabel,
-    })
-  }, [])
+  const isFormMounted = useDeferredMount(sheet.open)
 
-  const closeSheet = useCallback(() => {
-    if (rafRef.current) cancelAnimationFrame(rafRef.current)
-    rafRef.current = null
-
-    setSheet({ open: false, label: null })
-  }, [])
-
-  /* ---------------------------
-     memoized columns
-  ----------------------------*/
-  const columns = useMemo(
-    () => createColumns(page, 10, undefined, openEdit, setDeleteId),
-    [page, openEdit]
+  const openCreate = useCallback(() => setSheet({ open: true, label: null }), [])
+  const openEdit = useCallback(
+    (label: TLabel) => setSheet({ open: true, label: normalizeEntityId(label) }),
+    []
   )
+  const closeSheet = useCallback(() => setSheet({ open: false, label: null }), [])
+
+  const tableHandlers = useStableHandlers({
+    onEdit: openEdit,
+    onDelete: setDeleteId,
+  })
 
   const { mutate: deleteLabel, isPending: isDeleting } = useDeleteLabel()
 
   const handleDelete = useCallback(() => {
     if (!deleteId) return
+    deleteLabel({ id: deleteId }, { onSuccess: () => setDeleteId(null) })
+  }, [deleteId, deleteLabel])
 
-    deleteLabel(
-      { id: deleteId },
-      {
-        onSuccess: async () => {
-          await refetch()
-          setDeleteId(null)
-        },
-      }
-    )
-  }, [deleteId, deleteLabel, refetch])
-  
-  const defaultValues = useMemo(() => {
-    if (!sheet.label) return undefined
-    return {
-      name: sheet.label.name,
-    }
-  }, [sheet.label])
+  const defaultValues = useMemo(
+    () => (sheet.label ? { name: sheet.label.name } : undefined),
+    [sheet.label]
+  )
 
   return (
     <div className="w-full space-y-4">
-      {/* Header */}
       <div className="flex items-center justify-between">
         <h1 className="text-2xl font-bold">Labels</h1>
         <Button onClick={openCreate}>Add Label</Button>
       </div>
 
-      {/* Table */}
-      {isPending ? (
-        <Skeleton className="h-[400px] w-full" />
-      ) : (
-        <DataTable
-          key={dataUpdatedAt}
-          loading={isPending}
-          columns={columns}
-          data={data?.data ?? []}
-          total={data?.pages ?? 0}
-          page={page}
-          onPageChange={setPage}
-        />
-      )}
+      <CrudListTable
+        columns={columns}
+        rows={rows}
+        page={page}
+        setPage={setPage}
+        totalPages={totalPages}
+        limit={limit}
+        loading={isInitialLoading}
+        meta={tableHandlers}
+      />
 
-      {/* Sheet */}
-      <Sheet open={sheet.open} onOpenChange={(v) => !v && closeSheet()}>
+      <Sheet open={sheet.open} onOpenChange={(open) => !open && closeSheet()}>
         <SheetContent side="right" className="w-full sm:max-w-lg">
           <SheetHeader>
             <SheetTitle>{sheet.label ? 'Edit Label' : 'Create Label'}</SheetTitle>
@@ -127,32 +88,28 @@ function LabelPage() {
             </SheetDescription>
           </SheetHeader>
 
-          <LabelForm
-            key={sheet.label?.id ?? 'create'}
-            onCancel={closeSheet}
-            onSuccess={async () => {
-              await refetch()
-              closeSheet()
-            }}
-            defaultValues={defaultValues}
-            editId={sheet.label?.id}
-          />
+          {isFormMounted ? (
+            <LabelForm
+              key={sheet.label?.id ?? 'create'}
+              onCancel={closeSheet}
+              onSuccess={closeSheet}
+              defaultValues={defaultValues}
+              editId={sheet.label?.id}
+            />
+          ) : null}
         </SheetContent>
       </Sheet>
 
-      {/* Delete Dialog */}
       <Dialog open={!!deleteId} onOpenChange={() => setDeleteId(null)}>
         <DialogContent>
           <DialogHeader>
             <DialogTitle>Delete Label</DialogTitle>
             <DialogDescription>Are you sure you want to delete this label?</DialogDescription>
           </DialogHeader>
-
           <DialogFooter>
             <Button variant="outline" onClick={() => setDeleteId(null)} disabled={isDeleting}>
               Cancel
             </Button>
-
             <Button variant="destructive" onClick={handleDelete} loading={isDeleting}>
               Delete
             </Button>

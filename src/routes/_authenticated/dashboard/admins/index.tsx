@@ -1,118 +1,61 @@
 import {
   Button,
-  DataTable,
-  Sheet,
-  SheetContent,
-  SheetHeader,
-  SheetTitle,
-  SheetDescription,
+  CrudListTable,
   Dialog,
   DialogContent,
   DialogDescription,
   DialogFooter,
   DialogHeader,
   DialogTitle,
-  Skeleton,
+  Sheet,
+  SheetContent,
+  SheetHeader,
+  SheetTitle,
+  SheetDescription,
 } from '@/components'
 import { AdminForm } from '@/features/admins'
+import { useDeleteAdmin } from '@/features/admins/hooks/useDeleteAdmin'
 import { createFileRoute } from '@tanstack/react-router'
-import { useQueryClient } from '@tanstack/react-query'
-import { useState, useCallback, useMemo, useRef, useEffect } from 'react'
+import { useCallback, useMemo, useState } from 'react'
+import { useDeferredMount } from '@/hooks/useDeferredMount'
+import { useStableHandlers } from '@/hooks/useStableHandlers'
 import { useGetAdminsData } from './hooks/-index'
-import { createColumns } from './_components/columns'
-import { endpoints } from '@/lib/services/endpoints'
-import { useCustomMutation } from '@/lib/services/useMutation'
+import { columns } from './_components/columns'
 import type { TAdmin } from '@/typescript'
-import { request } from '@/lib/services/requst'
-import { apiClient } from '@/lib/services/api'
 
 export const Route = createFileRoute('/_authenticated/dashboard/admins/')({
   component: AdminsPage,
 })
 
-const LIMIT = 10
-
 function AdminsPage() {
-  const { data, isPending, page, setPage, isRefetching } = useGetAdminsData()
-  const queryClient = useQueryClient()
-  const rafIdRef = useRef<number | null>(null)
-
-  const [sheetState, setSheetState] = useState<{
-    open: boolean
-    admin: TAdmin | null
-  }>({ open: false, admin: null })
-  const [isFormMounted, setIsFormMounted] = useState(false)
-
+  const { rows, page, setPage, limit, totalPages, isInitialLoading } = useGetAdminsData()
+  const [sheetState, setSheetState] = useState<{ open: boolean; admin: TAdmin | null }>({
+    open: false,
+    admin: null,
+  })
   const [deleteId, setDeleteId] = useState<string | null>(null)
 
-  const { mutate: mutateDeleteAdmin, isPending: isDeleting } = useCustomMutation<unknown, string>({
-    key: ['admins', 'delete'],
-    method: 'delete',
-    requestFn: (id) =>
-      request<unknown, undefined>(apiClient, 'delete', endpoints.admins.delete(id), undefined),
-    onSuccess: () => {
-      setDeleteId(null)
-      handleRefresh()
-    },
+  const isFormMounted = useDeferredMount(sheetState.open)
+  const { mutate: mutateDeleteAdmin, isPending: isDeleting } = useDeleteAdmin()
+
+  const openCreateSheet = useCallback(() => setSheetState({ open: true, admin: null }), [])
+  const openEditSheet = useCallback(
+    (admin: TAdmin) => setSheetState({ open: true, admin }),
+    []
+  )
+  const closeSheet = useCallback(() => setSheetState({ open: false, admin: null }), [])
+
+  const tableHandlers = useStableHandlers({
+    onEdit: openEditSheet,
+    onDelete: setDeleteId,
   })
 
-  const handleRefresh = useCallback(async () => {
-    await queryClient.invalidateQueries({ queryKey: ['admins'], refetchType: 'active' })
-  }, [queryClient])
-
-  const scheduleFormMount = useCallback(() => {
-    if (rafIdRef.current !== null) {
-      cancelAnimationFrame(rafIdRef.current)
-    }
-    rafIdRef.current = requestAnimationFrame(() => {
-      setIsFormMounted(true)
-      rafIdRef.current = null
-    })
-  }, [])
-
-  useEffect(() => {
-    return () => {
-      if (rafIdRef.current !== null) {
-        cancelAnimationFrame(rafIdRef.current)
-      }
-    }
-  }, [])
-
-  const openCreateSheet = useCallback(() => {
-    setSheetState({ open: true, admin: null })
-    scheduleFormMount()
-  }, [scheduleFormMount])
-
-  const openEditSheet = useCallback(
-    (admin: TAdmin) => {
-      setSheetState({ open: true, admin })
-      scheduleFormMount()
-    },
-    [scheduleFormMount]
-  )
-
-  const closeSheet = useCallback(() => {
-    if (rafIdRef.current !== null) {
-      cancelAnimationFrame(rafIdRef.current)
-      rafIdRef.current = null
-    }
-    setIsFormMounted(false)
-    setSheetState({ open: false, admin: null })
-  }, [])
-
   const handleDeleteConfirm = useCallback(() => {
-    if (deleteId) mutateDeleteAdmin(deleteId)
+    if (!deleteId) return
+    mutateDeleteAdmin(deleteId, {
+      onSuccess: () => setDeleteId(null),
+    })
   }, [deleteId, mutateDeleteAdmin])
-
-  const handleFormSuccess = useCallback(async () => {
-    await handleRefresh()
-    closeSheet()
-  }, [handleRefresh, closeSheet])
-
-  const tableColumns = useMemo(
-    () => createColumns(page, LIMIT, setDeleteId, openEditSheet),
-    [page, openEditSheet]
-  )
 
   const editingAdmin = sheetState.admin
   const editingDefaultValues = useMemo(
@@ -137,22 +80,18 @@ function AdminsPage() {
         <h1 className="text-2xl font-bold">Admins</h1>
         <Button onClick={openCreateSheet}>Add Admin</Button>
       </div>
-      {isPending ? (
-        <div className="flex items-center justify-center">
-          <Skeleton className="h-full w-full" />
-        </div>
-      ) : (
-        <DataTable
-          loading={isRefetching}
-          columns={tableColumns}
-          data={data?.data ?? []}
-          total={data?.pages ?? 0}
-          page={page}
-          onPageChange={setPage}
-        />
-      )}  
 
-      {/* Create / Edit Sheet */}
+      <CrudListTable
+        columns={columns}
+        rows={rows}
+        page={page}
+        setPage={setPage}
+        totalPages={totalPages}
+        limit={limit}
+        loading={isInitialLoading}
+        meta={tableHandlers}
+      />
+
       <Sheet open={sheetState.open} onOpenChange={(open) => !open && closeSheet()}>
         <SheetContent side="right" className="w-full sm:max-w-lg">
           <SheetHeader>
@@ -166,7 +105,7 @@ function AdminsPage() {
           {isFormMounted ? (
             <AdminForm
               onCancel={closeSheet}
-              onSuccess={handleFormSuccess}
+              onSuccess={closeSheet}
               editId={editingAdmin?.id}
               defaultValues={editingDefaultValues}
             />
@@ -174,7 +113,6 @@ function AdminsPage() {
         </SheetContent>
       </Sheet>
 
-      {/* Delete Confirmation Dialog */}
       <Dialog open={deleteId !== null} onOpenChange={(open) => !open && setDeleteId(null)}>
         <DialogContent>
           <DialogHeader>

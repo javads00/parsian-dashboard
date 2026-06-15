@@ -53,10 +53,17 @@ const filterItemSchema = z.object({
   canUse: z.boolean(),
 })
 
-const permissionSchema = z.object({
-  resource: z.enum(['Admin', 'Role']),
+const subMenuSchema = z.object({
+  key: z.string().min(1),
+  label: z.string().min(1),
   page: z.object({
     canView: z.boolean(),
+  }),
+  actions: z.object({
+    canCreate: z.boolean(),
+    canEdit: z.boolean(),
+    canDelete: z.boolean(),
+    canRead: z.boolean(),
   }),
   components: z.object({
     table: z.object({
@@ -68,12 +75,48 @@ const permissionSchema = z.object({
       items: z.array(filterItemSchema),
     }),
   }),
+})
+
+const permissionSchema = z.object({
+  resource: z.enum([
+    'Admin',
+    'Role',
+    'Label',
+    'OrderStatus',
+    'Country',
+    'RoleStatusAccess',
+    'RoleMapping',
+    'Release',
+    'UserList',
+    'UserRoles',
+    'UserActivity',
+    'OrderList',
+    'EmailSetting',
+    'EmailSMTP',
+    'EmailTemplates',
+  ]),
+  page: z.object({
+    canView: z.boolean(),
+  }),
   actions: z.object({
     canCreate: z.boolean(),
     canEdit: z.boolean(),
     canDelete: z.boolean(),
     canRead: z.boolean(),
   }),
+  subMenus: z.array(subMenuSchema),
+  components: z
+    .object({
+      table: z.object({
+        canView: z.boolean(),
+        columns: z.array(columnSchema),
+      }),
+      filters: z.object({
+        canView: z.boolean(),
+        items: z.array(filterItemSchema),
+      }),
+    })
+    .optional(),
 })
 
 export const roleFormSchema = z.object({
@@ -87,10 +130,6 @@ export const roleStatusMappingFormSchema = z.object({
   visibleAs: z.string().min(1, 'Please select a visible as'),
   originals: z.array(z.string()).min(1, 'Please select at least one original'),
 })
-
-
-
-  
 
 export type RoleStatusMappingFormProps = z.infer<typeof roleStatusMappingFormSchema>
 

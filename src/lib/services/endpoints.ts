@@ -22,6 +22,9 @@ export const endpoints = {
   roles: {
     createKey: () => ['roles', 'create'],
     list: (page: number, limit: number) => `${API_URL}/RoleAdmin/list?page=${page}&limit=${limit}`,
+    all: () => `${API_URL}/RoleAdmin/list`,
+    allKey: () => ['roles', 'all'],
+
     create: () => `${API_URL}/RoleAdmin`,
     update: () => `${API_URL}/RoleAdmin`,
     delete: (id: string) => `${API_URL}/RoleAdmin?id=${id}`,
@@ -108,6 +111,45 @@ export const endpoints = {
     createKey: () => ['Release', 'create'],
     deleteKey: () => ['Release', 'delete'],
     key: (page: number, limit: number) => ['Release', page.toString(), limit.toString()],
+  },
+
+  emailSmtp: {
+    list: (page: number, limit: number) => `${API_URL}/Email?page=${page}&limit=${limit}`,
+    create: () => `${API_URL}/Email`,
+    find: (id: string) => `${API_URL}/Email?id=${id}`,
+    update: () => `${API_URL}/Email`,
+    delete: () => `${API_URL}/Email`,
+    createKey: () => ['Email', 'create'],
+    deleteKey: () => ['Email', 'delete'],
+    key: (page: number, limit: number) => ['Email', page.toString(), limit.toString()],
+  },
+
+  emailTemplate: {
+    list: (page: number, limit: number) => `${API_URL}/EmailTemplate?page=${page}&limit=${limit}`,
+    create: () => `${API_URL}/EmailTemplate`,
+    find: (id: string) => `${API_URL}/EmailTemplate?id=${id}`,
+    update: () => `${API_URL}/EmailTemplate`,
+    delete: () => `${API_URL}/EmailTemplate`,
+    createKey: () => ['EmailTemplate', 'create'],
+    deleteKey: () => ['EmailTemplate', 'delete'],
+    key: (page: number, limit: number) => ['EmailTemplate', page.toString(), limit.toString()],
+  },
+
+  emailStatic: {
+    list: (page: number, limit: number) => `${API_URL}/EmailStatic?page=${page}&limit=${limit}`,
+    find: (id: string) => `${API_URL}/EmailStatic?id=${id}`,
+    key: (page: number, limit: number) => ['EmailStatic', page.toString(), limit.toString()],
+  },
+
+  emailEjs: {
+    list: (page: number, limit: number) => `${API_URL}/EmailEJS?page=${page}&limit=${limit}`,
+    create: () => `${API_URL}/EmailEJS`,
+    find: (id: string) => `${API_URL}/EmailEJS?id=${id}`,
+    update: () => `${API_URL}/EmailEJS`,
+    delete: () => `${API_URL}/EmailEJS`,
+    createKey: () => ['EmailEJS', 'create'],
+    deleteKey: () => ['EmailEJS', 'delete'],
+    key: (page: number, limit: number) => ['EmailEJS', page.toString(), limit.toString()],
   },
 } as const satisfies Record<string, Record<string, EndpointEntry>>
 

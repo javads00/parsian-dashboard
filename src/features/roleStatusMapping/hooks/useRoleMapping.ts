@@ -1,15 +1,11 @@
-import { endpoints } from '@/lib/services/endpoints'
-import { useCustomQuery } from '@/lib/services/useQuery'
-import type { TOrderStatus } from '@/typescript'
+import { orderStatusFindAllQuery } from '@/lib/services/queries/lists'
+import { useQuery } from '@tanstack/react-query'
 
 export function useOrderStatusMapping() {
-  const { data, isPending } = useCustomQuery<TOrderStatus[]>({
-    url: endpoints.orderStaus.findAll(),
-    key: endpoints.orderStaus.findAllKey(),
-  })
+  const { data, isPending } = useQuery(orderStatusFindAllQuery())
 
   return {
-    orderMappings: data ?? [],
+    orderMappings: data?.data ?? [],
     isPending,
   }
 }

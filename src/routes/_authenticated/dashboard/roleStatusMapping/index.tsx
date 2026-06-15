@@ -1,7 +1,6 @@
-import { useCallback, useMemo, useRef, useState } from 'react'
 import {
   Button,
-  DataTable,
+  CrudListTable,
   Dialog,
   DialogContent,
   DialogDescription,
@@ -12,151 +11,106 @@ import {
   SheetHeader,
   SheetTitle,
   SheetDescription,
-  Skeleton,
   DialogFooter,
 } from '@/components'
 import { createFileRoute } from '@tanstack/react-router'
-
 import { RoleStatusMappingForm } from '@/features/roleStatusMapping/component/roleMappingForm'
-
-import { useDeleteRoleMapping } from '@/features/roleStatusMapping/hooks'
-import { createColumns } from './_components/columns'
-
-import type { TRoleStatusAccessClient, TRoleStatusMapping } from '@/typescript'
 import { useGetRoleStatusMappingData } from '@/features/roleStatusMapping'
+import { useDeleteRoleMapping } from '@/features/roleStatusMapping/hooks'
 import { mapRoleStatusMappingToForm } from '@/features/roleStatusMapping/utils/mapRoleStatusAccessToForm'
+import { useCallback, useMemo, useState } from 'react'
+import { useDeferredMount } from '@/hooks/useDeferredMount'
+import { useStableHandlers } from '@/hooks/useStableHandlers'
+import { normalizeEntityId } from '@/lib/utils/normalizeEntityId'
+import { columns } from './_components/columns'
+import type { TRoleStatusMapping } from '@/typescript'
 
 export const Route = createFileRoute('/_authenticated/dashboard/roleStatusMapping/')({
   component: RoleStatusMappingPage,
 })
 
 function RoleStatusMappingPage() {
-  const { data, isPending, page, setPage, refetch, dataUpdatedAt } = useGetRoleStatusMappingData()
+  const { rows, page, setPage, limit, totalPages, isInitialLoading } = useGetRoleStatusMappingData()
   const [deleteId, setDeleteId] = useState<string | null>(null)
-
-  const rafRef = useRef<number | null>(null)
-
-  const openCreate = useCallback(() => {
-    setSheet({ open: true, roleStatusAccess: null })
-  }, [])
-
-  const [sheet, setSheet] = useState<{
-    open: boolean
-    roleStatusAccess: TRoleStatusAccessClient | null
-  }>({
+  const [sheet, setSheet] = useState<{ open: boolean; item: TRoleStatusMapping | null }>({
     open: false,
-    roleStatusAccess: null,
+    item: null,
   })
 
-  const openEdit = useCallback((roleStatusAccess: TRoleStatusAccessClient) => {
-    const normalizedRoleStatusAccess = roleStatusAccess as TRoleStatusAccessClient & {
-      _id?: string
-    }
-    const normalizedId = normalizedRoleStatusAccess.id ?? normalizedRoleStatusAccess._id
-    setSheet({
-      open: true,
-      roleStatusAccess: normalizedId
-        ? ({ ...normalizedRoleStatusAccess, id: normalizedId } as TRoleStatusAccessClient)
-        : normalizedRoleStatusAccess,
-    })
-  }, [])
+  const isFormMounted = useDeferredMount(sheet.open)
 
-  const closeSheet = useCallback(() => {
-    if (rafRef.current) cancelAnimationFrame(rafRef.current)
-    rafRef.current = null
-
-    setSheet({ open: false, roleStatusAccess: null })
-  }, [])
-
-  /* ---------------------------
-     memoized columns
-  ----------------------------*/
-  const columns = useMemo(
-    () => createColumns(page, 10, undefined, openEdit, setDeleteId),
-    [page, openEdit]
+  const openCreate = useCallback(() => setSheet({ open: true, item: null }), [])
+  const openEdit = useCallback(
+    (item: TRoleStatusMapping) => setSheet({ open: true, item: normalizeEntityId(item) }),
+    []
   )
+  const closeSheet = useCallback(() => setSheet({ open: false, item: null }), [])
 
-  const { mutate: deleteRoleStatusAccess, isPending: isDeleting } = useDeleteRoleMapping()
+  const tableHandlers = useStableHandlers({ onEdit: openEdit, onDelete: setDeleteId })
+  const { mutate: deleteRoleMapping, isPending: isDeleting } = useDeleteRoleMapping()
 
   const handleDelete = useCallback(() => {
     if (!deleteId) return
+    deleteRoleMapping({ id: deleteId }, { onSuccess: () => setDeleteId(null) })
+  }, [deleteId, deleteRoleMapping])
 
-    deleteRoleStatusAccess(
-      { id: deleteId },
-      {
-        onSuccess: async () => {
-          await refetch()
-          setDeleteId(null)
-        },
-      }
-    )
-  }, [deleteId, deleteRoleStatusAccess, refetch])
-
-  const formDefaults = useMemo(() => {
-    if (!sheet.roleStatusAccess) return undefined
-    return mapRoleStatusMappingToForm(sheet.roleStatusAccess as unknown as TRoleStatusMapping)
-  }, [sheet.roleStatusAccess])
+  const formDefaults = useMemo(
+    () => (sheet.item ? mapRoleStatusMappingToForm(sheet.item) : undefined),
+    [sheet.item]
+  )
 
   return (
     <div className="w-full space-y-4">
-      {/* Header */}
       <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-bold">Role Status Access</h1>
-        <Button onClick={openCreate}>Add Role Status Access</Button>
+        <h1 className="text-2xl font-bold">Role Status Mapping</h1>
+        <Button onClick={openCreate}>Add Role Status Mapping</Button>
       </div>
 
-      {/* Table */}
-      {isPending ? (
-        <Skeleton className="h-[400px] w-full" />
-      ) : (
-        <DataTable
-          key={dataUpdatedAt}
-          loading={isPending}
-          columns={columns}
-          data={data?.data ?? []}
-          total={data?.pages ?? 0}
-          page={page}
-          onPageChange={setPage}
-        />
-      )}
+      <CrudListTable
+        columns={columns}
+        rows={rows}
+        page={page}
+        setPage={setPage}
+        totalPages={totalPages}
+        limit={limit}
+        loading={isInitialLoading}
+        meta={tableHandlers}
+      />
 
-      {/* Sheet */}
-      <Sheet open={sheet.open} onOpenChange={(v) => !v && closeSheet()}>
+      <Sheet open={sheet.open} onOpenChange={(open) => !open && closeSheet()}>
         <SheetContent side="right" className="w-full sm:max-w-lg">
           <SheetHeader>
             <SheetTitle>
-              {sheet.roleStatusAccess ? 'Edit Role Status Access' : 'Create Role Status Access'}
+              {sheet.item ? 'Edit Role Status Mapping' : 'Create Role Status Mapping'}
             </SheetTitle>
             <SheetDescription>
-              {sheet.roleStatusAccess
-                ? 'Update Role Status Access settings'
-                : 'Create new Role Status Access with permissions'}
+              {sheet.item
+                ? 'Update role status mapping settings'
+                : 'Create a new role status mapping'}
             </SheetDescription>
           </SheetHeader>
 
-          <RoleStatusMappingForm
-            key={sheet.roleStatusAccess?.id ?? 'create'}
-            onCancel={closeSheet}
-            onSuccess={async () => {
-              await refetch()
-              closeSheet()
-            }}
-            defaultValues={
-              formDefaults
-                ? {
-                    roleId: formDefaults.roleId,
-                    visibleAs: formDefaults.visibleAs,
-                    originals: formDefaults.originals,
-                  }
-                : undefined
-            }
-            statusItemLabels={formDefaults?.originalItemLabels}
-            editId={sheet.roleStatusAccess?.id}
-          />
+          {isFormMounted ? (
+            <RoleStatusMappingForm
+              key={sheet.item?.id ?? 'create'}
+              onCancel={closeSheet}
+              onSuccess={closeSheet}
+              defaultValues={
+                formDefaults
+                  ? {
+                      roleId: formDefaults.roleId,
+                      visibleAs: formDefaults.visibleAs,
+                      originals: formDefaults.originals,
+                    }
+                  : undefined
+              }
+              statusItemLabels={formDefaults?.originalItemLabels}
+              editId={sheet.item?.id}
+            />
+          ) : null}
         </SheetContent>
       </Sheet>
 
-      {/* Delete Dialog */}
       <Dialog open={!!deleteId} onOpenChange={() => setDeleteId(null)}>
         <DialogContent>
           <DialogHeader>
@@ -165,12 +119,10 @@ function RoleStatusMappingPage() {
               Are you sure you want to delete this Role Status Mapping?
             </DialogDescription>
           </DialogHeader>
-
           <DialogFooter>
             <Button variant="outline" onClick={() => setDeleteId(null)} disabled={isDeleting}>
               Cancel
             </Button>
-
             <Button variant="destructive" onClick={handleDelete} loading={isDeleting}>
               Delete
             </Button>

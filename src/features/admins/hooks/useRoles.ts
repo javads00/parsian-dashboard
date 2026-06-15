@@ -1,12 +1,17 @@
-import { endpoints } from '@/lib/services/endpoints'
-import { useCustomQuery } from '@/lib/services/useQuery'
-import type { TRole } from '@/typescript'
+import { rolesClientListQuery, rolesListQuery } from '@/lib'
+import { useQuery } from '@tanstack/react-query'
 
 export function useRoles() {
-  const { data, isPending } = useCustomQuery<TRole[]>({
-    url: endpoints?.rolesClient?.getList(),
-    key: endpoints?.rolesClient?.getListKey(),
-  })
+  const { data, isPending } = useQuery(rolesListQuery(1, 100))
+
+  return {
+    roles: data?.data || [],
+    isPending,
+  }
+}
+
+export function useRolesClient() {
+  const { data, isPending } = useQuery(rolesClientListQuery())
 
   return {
     roles: data?.data || [],

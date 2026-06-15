@@ -1,6 +1,15 @@
-import { Card } from '@/components'
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from '@/components'
+import { EnvSwitcher } from '@/components/EnvSwitcher'
 import { getAuthStore, LoginForm } from '@/features'
 import { createFileRoute, redirect } from '@tanstack/react-router'
+import { LayoutDashboard, Lock, Shield } from 'lucide-react'
 
 export const Route = createFileRoute('/login/')({
   beforeLoad: async () => {
@@ -14,52 +23,93 @@ export const Route = createFileRoute('/login/')({
 
 function LoginPage() {
   return (
-    <main className="flex min-h-dvh flex-col items-center justify-end gap-14 bg-gray-100 px-2 pt-12 duration-200 sm:px-6 md:gap-24 dark:bg-black">
-      <Header />
-      <Card className="rounded-t-200 shadow-soft relative flex min-h-[650px] w-full flex-col items-center gap-16 bg-gray-50 px-5 py-8 shadow-[#6780B214] xl:max-w-7xl dark:border dark:border-gray-400 dark:bg-gray-900">
-        <BackgroundImages />
-        <div className="flex w-full max-w-[480px] flex-1 flex-col gap-6 md:gap-12">
-          <h2 className="text-center text-2xl font-bold">Login</h2>
-          <LoginForm />
-        </div>
-      </Card>
+    <main className="bg-layout-bg relative flex h-dvh items-center justify-center overflow-hidden px-4">
+      <LoginBackground />
+
+      <div className="relative z-10 w-full max-w-[400px]">
+        <Card className="border-layout-border gap-0 overflow-visible border py-0 shadow-lg">
+          <CardHeader className="space-y-4 px-6 pt-7 pb-0">
+            <div className="flex items-start justify-between gap-3">
+              <div className="flex min-w-0 items-center gap-3">
+                <div className="bg-primary text-primary-foreground flex h-10 w-10 shrink-0 items-center justify-center rounded-lg shadow-sm">
+                  <LayoutDashboard className="h-5 w-5" strokeWidth={2} />
+                </div>
+                <div className="min-w-0">
+                  <p className="text-foreground truncate text-sm font-semibold">Management System</p>
+                  <p className="text-muted-foreground text-xs">Admin dashboard</p>
+                </div>
+              </div>
+
+              <EnvSwitcher requireConfirmation={false} variant="login" className="shrink-0" />
+            </div>
+
+            <div className="space-y-1">
+              <CardTitle className="text-xl font-semibold tracking-tight">Welcome back</CardTitle>
+              <CardDescription>Sign in to access your workspace</CardDescription>
+            </div>
+          </CardHeader>
+
+          <CardContent className="px-6 pt-5 pb-6">
+            <LoginForm />
+          </CardContent>
+
+          <CardFooter className="border-layout-border bg-layout-surface/60 flex items-center justify-between border-t px-6 py-3">
+            <div className="flex items-center gap-4">
+              <TrustBadge icon={Shield} label="Encrypted" />
+              <TrustBadge icon={Lock} label="Secure" />
+            </div>
+            <span className="text-muted-foreground text-[11px]">Terms & Privacy</span>
+          </CardFooter>
+        </Card>
+      </div>
     </main>
   )
 }
 
-const Header = () => {
+function TrustBadge({
+  icon: Icon,
+  label,
+}: {
+  icon: typeof Shield
+  label: string
+}) {
   return (
-    <h3 className="relative z-10 text-[clamp(1rem,5vw,3rem)] font-extralight">
-      <div className="bg-linear-to-r from-[#1B6BED] to-[#1DB4FF] bg-clip-text text-transparent">
-        The best <strong className="font-bold">CRM Coaching</strong>
-        and
-      </div>
-      <div className="bg-linear-to-l from-[#1B6BED] to-[#1DB4FF] bg-clip-text text-transparent">
-        <strong className="font-bold">Management </strong> system ever
-        <strong className="font-bold">.</strong>
-      </div>
-    </h3>
+    <div className="text-muted-foreground flex items-center gap-1.5 text-[11px]">
+      <Icon className="h-3.5 w-3.5 shrink-0 opacity-70" strokeWidth={2} />
+      <span>{label}</span>
+    </div>
   )
 }
 
-const BackgroundImages = () => {
+function LoginBackground() {
   return (
     <>
-      <img
-        src="images/auth/ellipse.png"
-        alt="Illustration"
-        draggable={false}
-        width={285}
-        height={285}
-        className="absolute end-6 bottom-full select-none lg:end-[clamp(2rem,6vw,8rem)]"
+      <div
+        aria-hidden
+        className="pointer-events-none absolute inset-0 opacity-[0.45]"
+        style={{
+          backgroundImage: `
+            linear-gradient(to right, var(--layout-border) 1px, transparent 1px),
+            linear-gradient(to bottom, var(--layout-border) 1px, transparent 1px)
+          `,
+          backgroundSize: '56px 56px',
+        }}
       />
-      <img
-        src="images/auth/ellipse-full.png"
-        alt="Illustration"
-        draggable={false}
-        width={85}
-        height={85}
-        className="absolute start-[clamp(1rem,5vw,10rem)] bottom-[calc(100%+10rem)] z-20 select-none lg:start-[clamp(2rem,16vw,15.5rem)] lg:bottom-[calc(100%+11rem)]"
+      <div
+        aria-hidden
+        className="bg-sidebar-accent/8 pointer-events-none absolute -top-32 left-1/2 h-72 w-72 -translate-x-1/2 rounded-full blur-3xl"
+      />
+      <div
+        aria-hidden
+        className="bg-layout-surface/80 pointer-events-none absolute -right-16 -bottom-16 h-56 w-56 rounded-full blur-2xl"
+      />
+      <div
+        aria-hidden
+        className="border-layout-border/60 pointer-events-none absolute top-[18%] left-[12%] h-28 w-28 rounded-full border"
+      />
+      <div
+        aria-hidden
+        className="border-layout-border/40 pointer-events-none absolute right-[10%] bottom-[22%] h-20 w-20 rounded-full border"
       />
     </>
   )

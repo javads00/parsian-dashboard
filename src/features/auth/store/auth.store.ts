@@ -1,7 +1,7 @@
 import { registerAuthHandlers } from '@/lib/services/auth-context'
 import { apiClient } from '@/lib/services/api'
 import { endpoints } from '@/lib/services/endpoints'
-import { request } from '@/lib/services/requst'
+import { request } from '@/lib/services/request'
 import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
 import type { AuthorizedUser, TAuthStore } from '@/typescript'

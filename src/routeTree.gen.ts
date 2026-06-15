@@ -22,6 +22,9 @@ import { Route as AuthenticatedDashboardOrderStatusIndexRouteImport } from './ro
 import { Route as AuthenticatedDashboardLabelIndexRouteImport } from './routes/_authenticated/dashboard/label/index'
 import { Route as AuthenticatedDashboardCountryIndexRouteImport } from './routes/_authenticated/dashboard/country/index'
 import { Route as AuthenticatedDashboardAdminsIndexRouteImport } from './routes/_authenticated/dashboard/admins/index'
+import { Route as AuthenticatedDashboardEmailSettingSmtpIndexRouteImport } from './routes/_authenticated/dashboard/emailSetting/smtp/index'
+import { Route as AuthenticatedDashboardEmailSettingEmailTemplatesIndexRouteImport } from './routes/_authenticated/dashboard/emailSetting/emailTemplates/index'
+import { Route as AuthenticatedDashboardEmailSettingEmailEjsIndexRouteImport } from './routes/_authenticated/dashboard/emailSetting/emailEjs/index'
 
 const AuthenticatedRouteRoute = AuthenticatedRouteRouteImport.update({
   id: '/_authenticated',
@@ -97,6 +100,24 @@ const AuthenticatedDashboardAdminsIndexRoute =
     path: '/admins/',
     getParentRoute: () => AuthenticatedDashboardRouteRoute,
   } as any)
+const AuthenticatedDashboardEmailSettingSmtpIndexRoute =
+  AuthenticatedDashboardEmailSettingSmtpIndexRouteImport.update({
+    id: '/emailSetting/smtp/',
+    path: '/emailSetting/smtp/',
+    getParentRoute: () => AuthenticatedDashboardRouteRoute,
+  } as any)
+const AuthenticatedDashboardEmailSettingEmailTemplatesIndexRoute =
+  AuthenticatedDashboardEmailSettingEmailTemplatesIndexRouteImport.update({
+    id: '/emailSetting/emailTemplates/',
+    path: '/emailSetting/emailTemplates/',
+    getParentRoute: () => AuthenticatedDashboardRouteRoute,
+  } as any)
+const AuthenticatedDashboardEmailSettingEmailEjsIndexRoute =
+  AuthenticatedDashboardEmailSettingEmailEjsIndexRouteImport.update({
+    id: '/emailSetting/emailEjs/',
+    path: '/emailSetting/emailEjs/',
+    getParentRoute: () => AuthenticatedDashboardRouteRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -111,6 +132,9 @@ export interface FileRoutesByFullPath {
   '/dashboard/role/': typeof AuthenticatedDashboardRoleIndexRoute
   '/dashboard/roleStatusAccess/': typeof AuthenticatedDashboardRoleStatusAccessIndexRoute
   '/dashboard/roleStatusMapping/': typeof AuthenticatedDashboardRoleStatusMappingIndexRoute
+  '/dashboard/emailSetting/emailEjs/': typeof AuthenticatedDashboardEmailSettingEmailEjsIndexRoute
+  '/dashboard/emailSetting/emailTemplates/': typeof AuthenticatedDashboardEmailSettingEmailTemplatesIndexRoute
+  '/dashboard/emailSetting/smtp/': typeof AuthenticatedDashboardEmailSettingSmtpIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -124,6 +148,9 @@ export interface FileRoutesByTo {
   '/dashboard/role': typeof AuthenticatedDashboardRoleIndexRoute
   '/dashboard/roleStatusAccess': typeof AuthenticatedDashboardRoleStatusAccessIndexRoute
   '/dashboard/roleStatusMapping': typeof AuthenticatedDashboardRoleStatusMappingIndexRoute
+  '/dashboard/emailSetting/emailEjs': typeof AuthenticatedDashboardEmailSettingEmailEjsIndexRoute
+  '/dashboard/emailSetting/emailTemplates': typeof AuthenticatedDashboardEmailSettingEmailTemplatesIndexRoute
+  '/dashboard/emailSetting/smtp': typeof AuthenticatedDashboardEmailSettingSmtpIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -140,6 +167,9 @@ export interface FileRoutesById {
   '/_authenticated/dashboard/role/': typeof AuthenticatedDashboardRoleIndexRoute
   '/_authenticated/dashboard/roleStatusAccess/': typeof AuthenticatedDashboardRoleStatusAccessIndexRoute
   '/_authenticated/dashboard/roleStatusMapping/': typeof AuthenticatedDashboardRoleStatusMappingIndexRoute
+  '/_authenticated/dashboard/emailSetting/emailEjs/': typeof AuthenticatedDashboardEmailSettingEmailEjsIndexRoute
+  '/_authenticated/dashboard/emailSetting/emailTemplates/': typeof AuthenticatedDashboardEmailSettingEmailTemplatesIndexRoute
+  '/_authenticated/dashboard/emailSetting/smtp/': typeof AuthenticatedDashboardEmailSettingSmtpIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -156,6 +186,9 @@ export interface FileRouteTypes {
     | '/dashboard/role/'
     | '/dashboard/roleStatusAccess/'
     | '/dashboard/roleStatusMapping/'
+    | '/dashboard/emailSetting/emailEjs/'
+    | '/dashboard/emailSetting/emailTemplates/'
+    | '/dashboard/emailSetting/smtp/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -169,6 +202,9 @@ export interface FileRouteTypes {
     | '/dashboard/role'
     | '/dashboard/roleStatusAccess'
     | '/dashboard/roleStatusMapping'
+    | '/dashboard/emailSetting/emailEjs'
+    | '/dashboard/emailSetting/emailTemplates'
+    | '/dashboard/emailSetting/smtp'
   id:
     | '__root__'
     | '/'
@@ -184,6 +220,9 @@ export interface FileRouteTypes {
     | '/_authenticated/dashboard/role/'
     | '/_authenticated/dashboard/roleStatusAccess/'
     | '/_authenticated/dashboard/roleStatusMapping/'
+    | '/_authenticated/dashboard/emailSetting/emailEjs/'
+    | '/_authenticated/dashboard/emailSetting/emailTemplates/'
+    | '/_authenticated/dashboard/emailSetting/smtp/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -285,6 +324,27 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedDashboardAdminsIndexRouteImport
       parentRoute: typeof AuthenticatedDashboardRouteRoute
     }
+    '/_authenticated/dashboard/emailSetting/smtp/': {
+      id: '/_authenticated/dashboard/emailSetting/smtp/'
+      path: '/emailSetting/smtp'
+      fullPath: '/dashboard/emailSetting/smtp/'
+      preLoaderRoute: typeof AuthenticatedDashboardEmailSettingSmtpIndexRouteImport
+      parentRoute: typeof AuthenticatedDashboardRouteRoute
+    }
+    '/_authenticated/dashboard/emailSetting/emailTemplates/': {
+      id: '/_authenticated/dashboard/emailSetting/emailTemplates/'
+      path: '/emailSetting/emailTemplates'
+      fullPath: '/dashboard/emailSetting/emailTemplates/'
+      preLoaderRoute: typeof AuthenticatedDashboardEmailSettingEmailTemplatesIndexRouteImport
+      parentRoute: typeof AuthenticatedDashboardRouteRoute
+    }
+    '/_authenticated/dashboard/emailSetting/emailEjs/': {
+      id: '/_authenticated/dashboard/emailSetting/emailEjs/'
+      path: '/emailSetting/emailEjs'
+      fullPath: '/dashboard/emailSetting/emailEjs/'
+      preLoaderRoute: typeof AuthenticatedDashboardEmailSettingEmailEjsIndexRouteImport
+      parentRoute: typeof AuthenticatedDashboardRouteRoute
+    }
   }
 }
 
@@ -298,6 +358,9 @@ interface AuthenticatedDashboardRouteRouteChildren {
   AuthenticatedDashboardRoleIndexRoute: typeof AuthenticatedDashboardRoleIndexRoute
   AuthenticatedDashboardRoleStatusAccessIndexRoute: typeof AuthenticatedDashboardRoleStatusAccessIndexRoute
   AuthenticatedDashboardRoleStatusMappingIndexRoute: typeof AuthenticatedDashboardRoleStatusMappingIndexRoute
+  AuthenticatedDashboardEmailSettingEmailEjsIndexRoute: typeof AuthenticatedDashboardEmailSettingEmailEjsIndexRoute
+  AuthenticatedDashboardEmailSettingEmailTemplatesIndexRoute: typeof AuthenticatedDashboardEmailSettingEmailTemplatesIndexRoute
+  AuthenticatedDashboardEmailSettingSmtpIndexRoute: typeof AuthenticatedDashboardEmailSettingSmtpIndexRoute
 }
 
 const AuthenticatedDashboardRouteRouteChildren: AuthenticatedDashboardRouteRouteChildren =
@@ -318,6 +381,12 @@ const AuthenticatedDashboardRouteRouteChildren: AuthenticatedDashboardRouteRoute
       AuthenticatedDashboardRoleStatusAccessIndexRoute,
     AuthenticatedDashboardRoleStatusMappingIndexRoute:
       AuthenticatedDashboardRoleStatusMappingIndexRoute,
+    AuthenticatedDashboardEmailSettingEmailEjsIndexRoute:
+      AuthenticatedDashboardEmailSettingEmailEjsIndexRoute,
+    AuthenticatedDashboardEmailSettingEmailTemplatesIndexRoute:
+      AuthenticatedDashboardEmailSettingEmailTemplatesIndexRoute,
+    AuthenticatedDashboardEmailSettingSmtpIndexRoute:
+      AuthenticatedDashboardEmailSettingSmtpIndexRoute,
   }
 
 const AuthenticatedDashboardRouteRouteWithChildren =

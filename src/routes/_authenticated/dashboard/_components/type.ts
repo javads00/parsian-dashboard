@@ -10,7 +10,7 @@ export type SideBarComponentProps = {
 }
 
 export type SideBarUiProps = {
-  currentItem: (typeof MENU_ITEMS)[number]
+  currentItem?: (typeof MENU_ITEMS)[number]
 }
 
 // Order Types

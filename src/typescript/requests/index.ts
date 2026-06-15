@@ -1,8 +1,7 @@
 export * from './admins'
 export * from './role'
-export * from './roleStatusAccess'
 export * from './auth'
 export * from './label'
 export * from './global.type'
-
 export * from './releaseApp'
+export * from './emailSetting'

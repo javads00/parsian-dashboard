@@ -1,52 +1,33 @@
-import { endpoints } from '@/lib/services/endpoints'
-import { useCustomMutation } from '@/lib/services/useMutation'
-import { useCustomPaginationQuery } from '@/lib/services/useQuery'
-import type { TLabel } from '@/typescript'
-import { useQueryClient } from '@tanstack/react-query'
-import { apiClient } from '@/lib/services/api'
-import { request } from '@/lib/services/requst'
+import { usePaginatedList } from '@/hooks/usePaginatedList'
+import {
+  createLabelMutation,
+  deleteLabelMutation,
+  updateLabelMutation,
+} from '@/lib/services/mutations/crud'
+import { labelListQuery } from '@/lib/services/queries/lists'
+import { keys } from '@/lib/services/keys'
 import type { LabelFormValues } from '@/lib/schema'
+import type { TLabel } from '@/typescript'
+import { useMutation, useQueryClient } from '@tanstack/react-query'
 
-export const useGetAdminsData = () => {
-  const { data, isPending, page, setPage, refetch, isRefetching, dataUpdatedAt } =
-    useCustomPaginationQuery<TLabel[]>({
-      url: (page: number) => endpoints.label.list(page, 50),
-      key: (page: number) => endpoints.label.key(page, 60),
-    })
+export const useGetLabelData = () => usePaginatedList<TLabel>(labelListQuery, keys.label.lists())
 
-  return {
-    data,
-    isPending,
-    page,
-    setPage,
-    refetch,
-    dataUpdatedAt,
-    isRefetching,
-  }
-}
+/** @deprecated Use useGetLabelData */
+export const useGetAdminsData = useGetLabelData
 
 export function useCreateLabel() {
-  return useCustomMutation<TLabel, LabelFormValues>({
-    method: 'post',
-    url: endpoints.label.create(),
-    key: endpoints.label.createKey(),
+  const queryClient = useQueryClient()
+  return useMutation({
+    ...createLabelMutation(),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: keys.label.lists() }),
   })
 }
 
 export function useEditLabel() {
-  return useCustomMutation<TLabel, LabelFormValues & { id: string }>({
-    method: 'put',
-    requestFn: ({ id, ...payload }) =>
-      request<TLabel, LabelFormValues & { id: string }>(
-        apiClient,
-        'put',
-        endpoints.label.update(),
-        {
-          ...payload,
-          id,
-        }
-      ),
-    key: ['label', 'edit'],
+  const queryClient = useQueryClient()
+  return useMutation({
+    ...updateLabelMutation(),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: keys.label.lists() }),
   })
 }
 
@@ -56,19 +37,10 @@ type TDeleteLabelPayload = {
 
 export function useDeleteLabel() {
   const queryClient = useQueryClient()
-  return useCustomMutation<void, TDeleteLabelPayload>({
-    method: 'delete',
-    url: endpoints.label.delete(),
-    key: ['label', 'delete'],
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: roleQueryKeys.all })
-    },
+  return useMutation({
+    ...deleteLabelMutation(),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: keys.label.lists() }),
   })
 }
 
-export const roleQueryKeys = {
-  all: ['label'] as const,
-  list: () => [...roleQueryKeys.all, 'list'] as const,
-  listPage: (page: number, limit: number) => [...roleQueryKeys.list(), { page, limit }] as const,
-  find: (id: string) => [...roleQueryKeys.all, 'find', id] as const,
-}
+export type { TLabel, LabelFormValues, TDeleteLabelPayload }

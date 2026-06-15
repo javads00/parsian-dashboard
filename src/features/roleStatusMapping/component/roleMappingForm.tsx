@@ -5,11 +5,9 @@ import { useForm } from 'react-hook-form'
 import { useCreateRoleMapping, useEditRoleMapping, useOrderStatusMapping } from '../hooks'
 import { roleStatusMappingFormSchema, type RoleStatusMappingFormProps } from '@/lib/schema'
 import type { TFormContainerProps } from '@/typescript/form'
-import { useRoles } from '@/features/admins/hooks/useRoles'
+import { useRolesClient } from '@/features/admins/hooks/useRoles'
 import RoleMappingFormUi from './roleMappingFormUi'
 import { toRoleStatusMappingPayload } from '../utils/toRoleStatusAccessPayload'
-import type { TRoleStatusMapping } from '@/typescript'
-
 type RoleStatusMappingFormProps_ = TFormContainerProps<RoleStatusMappingFormProps> & {
   statusItemLabels?: Record<string, string>
 }
@@ -49,7 +47,7 @@ export function RoleStatusMappingForm({
     onSuccess?.()
   }
 
-  const { roles, isPending: isLoadingRoles } = useRoles()
+  const { roles, isPending: isLoadingRoles } = useRolesClient()
   const { orderMappings, isPending: isLoadingOrderStatuses } = useOrderStatusMapping()
   const { mutate: createRole, isPending: isCreating } = useCreateRoleMapping()
   const { mutate: editRole, isPending: isUpdating } = useEditRoleMapping()
@@ -81,7 +79,7 @@ export function RoleStatusMappingForm({
       isPending={isPending || isCreating || isUpdating}
       submitLabel={isEditMode ? 'Edit Role Status Mapping' : 'Create Role Status Mapping'}
       roles={roles}
-      orderMappings={orderMappings}
+      orderStatuses={orderMappings}
       isLoadingRoles={isLoadingRoles}
       isLoadingOrderStatuses={isLoadingOrderStatuses}
       statusItemLabels={statusItemLabels}

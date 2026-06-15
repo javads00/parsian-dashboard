@@ -1,11 +1,8 @@
-import { adminFormSchema, type AdminFormProps } from '@/lib'
-import { endpoints } from '@/lib/services/endpoints'
-import { useCustomMutation } from '@/lib/services/useMutation'
+import { adminFormSchema, createAdminMutation, keys, updateAdminMutation, type AdminFormProps } from '@/lib'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useEffect, useMemo } from 'react'
 import { useForm } from 'react-hook-form'
-import { useQueryClient } from '@tanstack/react-query'
-import { adminQueryKeys } from '@/lib/services/endpoints'
+import { useMutation, useQueryClient } from '@tanstack/react-query'
 import AdminsFormUi from './AdminsFormUi'
 import { useRoles } from './hooks/useRoles'
 import { z } from 'zod'
@@ -30,8 +27,8 @@ export function AdminForm({
   const isEditMode = Boolean(defaultValues && Object.keys(defaultValues).length > 0)
   const formSchema = isEditMode
     ? adminFormSchema.extend({
-      password: z.string().optional(),
-    })
+        password: z.string().optional(),
+      })
     : adminFormSchema
 
   const initialValues: AdminFormProps = useMemo(
@@ -49,17 +46,12 @@ export function AdminForm({
 
   const { roles, isPending: isLoadingRoles } = useRoles()
   const queryClient = useQueryClient()
+
   const refreshAdminsList = () => {
-    queryClient.invalidateQueries({
-      queryKey: adminQueryKeys.all,
-    })
-    queryClient.refetchQueries({
-      queryKey: adminQueryKeys.all,
-      type: 'active',
-    })
+    queryClient.invalidateQueries({ queryKey: keys.admins.lists() })
   }
+
   const handleMutationSuccess = () => {
-    // Parent can coordinate refresh/close flow; otherwise fallback to local refresh.
     if (onSuccess) {
       onSuccess()
       return
@@ -77,19 +69,15 @@ export function AdminForm({
     form.reset(initialValues)
   }, [form, initialValues])
 
-  const { mutate: mutateCreateAdmin, isPending: isCreating } = useCustomMutation<unknown, AdminFormProps>({
-    key: ['admins', 'create'],
-    method: 'post',
-    url: endpoints.admins.create(),
+  const { mutate: mutateCreateAdmin, isPending: isCreating } = useMutation({
+    ...createAdminMutation(),
     onSuccess: () => {
       handleMutationSuccess()
     },
   })
 
-  const { mutate: mutateEditAdmin, isPending: isUpdating } = useCustomMutation<unknown, AdminFormProps & { id: string }>({
-    key: ['admins', 'edit'],
-    method: 'put',
-    url: endpoints.admins.update(),
+  const { mutate: mutateEditAdmin, isPending: isUpdating } = useMutation({
+    ...updateAdminMutation(),
     onSuccess: () => {
       handleMutationSuccess()
     },

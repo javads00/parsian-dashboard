@@ -16,7 +16,7 @@ import { FormController, FormWrapper } from '@/components/ui/forms/formWrapper'
 
 import type { RoleStatusMappingFormProps } from '@/lib/schema'
 
-import type { TOrderStatus, TRole } from '@/typescript'
+import type { TOrderStatus, TRoleClient } from '@/typescript'
 
 import type { TFormUi } from '@/typescript/form'
 
@@ -25,7 +25,7 @@ import { useMemo } from 'react'
 type StatusOption = { id: string; label: string }
 
 type RoleStatusMappingFormUiProps = TFormUi<RoleStatusMappingFormProps> & {
-  roles: TRole[]
+  roles: TRoleClient[]
   orderStatuses: TOrderStatus[]
   isLoadingRoles?: boolean
   isLoadingOrderStatuses?: boolean
@@ -76,15 +76,14 @@ export default function RoleMappingFormUi({
       submitLabel={submitLabel}
       twoColumns
     >
-      {/* Section heading */}
-
       <div className="col-span-2">
         <p className="text-muted-foreground mb-3 text-[11px] font-semibold tracking-widest uppercase">
-          Role Status Access Information
+          Role Status Mapping
+        </p>
+        <p className="text-muted-foreground text-sm">
+          Map original order statuses to a single visible status for a role.
         </p>
       </div>
-
-      {/* Role */}
 
       <FormController name="roleId" label="Role">
         {({ field, fieldState }) => (
@@ -111,11 +110,13 @@ export default function RoleMappingFormUi({
         )}
       </FormController>
 
-      {/* From Status */}
-
-      <FormController name="fromStatus" label="From Status">
+      <FormController name="visibleAs" label="Visible As">
         {({ field, fieldState }) => (
-          <Select value={field.value ?? ''} onValueChange={field.onChange}>
+          <Select
+            value={field.value ?? ''}
+            onValueChange={field.onChange}
+            disabled={isLoadingOrderStatuses}
+          >
             <SelectTrigger
               aria-invalid={fieldState.invalid}
               className="focus:ring-ring/20 w-full transition-shadow focus:ring-[3px]"
@@ -136,9 +137,7 @@ export default function RoleMappingFormUi({
         )}
       </FormController>
 
-      {/* Allowed Statuses — full width */}
-
-      <FormController name="statusId" label="Allowed Statuses" className="col-span-2">
+      <FormController name="originals" label="Original Statuses" className="col-span-2">
         {({ field, fieldState }) => {
           const selectedValues: string[] = field.value ?? []
 
@@ -157,9 +156,7 @@ export default function RoleMappingFormUi({
                     </MultiSelectChip>
                   ))
                 ) : (
-                  <MultiSelectValue
-                    placeholder={'Visible as status is required to select allowed statuses'}
-                  />
+                  <MultiSelectValue placeholder="Select original statuses" />
                 )}
               </MultiSelectTrigger>
 

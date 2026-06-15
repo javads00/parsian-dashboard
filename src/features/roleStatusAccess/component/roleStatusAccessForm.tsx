@@ -5,7 +5,7 @@ import { useForm } from 'react-hook-form'
 import { useCreateRoleStatusAccess, useEditRoleStatusAccess, useOrderStatuses } from '../hooks'
 import { roleStatusAccessFormSchema, type RoleStatusAccessFormProps } from '@/lib/schema'
 import type { TFormContainerProps } from '@/typescript/form'
-import { useRoles } from '@/features/admins/hooks/useRoles'
+import { useRolesClient } from '@/features/admins/hooks/useRoles'
 import RoleStatusAccessFormUi from './roleStatusAccessFormUi'
 import { toRoleStatusAccessPayload } from '../utils/toRoleStatusAccessPayload'
 
@@ -36,10 +36,7 @@ export function RoleStatusAccessForm({
 
   const form = useForm<RoleStatusAccessFormProps>({
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    resolver: zodResolver(roleStatusAccessFormSchema) as any,
-    mode: 'all',
-    defaultValues: initialValues,
-  })
+    resolver: zodResolver(roleStatusAccessFormSchema) as any,mode: 'all',defaultValues: initialValues})
 
   useEffect(() => {
     form.reset(initialValues)
@@ -47,7 +44,7 @@ export function RoleStatusAccessForm({
 
   const handleSuccess = async () => {onSuccess?.()}
 
-  const { roles, isPending: isLoadingRoles } = useRoles()
+  const { roles, isPending: isLoadingRoles } = useRolesClient()
   const { orderStatuses, isPending: isLoadingOrderStatuses } = useOrderStatuses()
   const { mutate: createRole, isPending: isCreating } = useCreateRoleStatusAccess()
   const { mutate: editRole, isPending: isUpdating } = useEditRoleStatusAccess()

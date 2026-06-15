@@ -30,7 +30,7 @@ import { FormController, FormWrapper } from '@/components/ui/forms/formWrapper'
 
 import type { RoleStatusAccessFormProps } from '@/lib/schema'
 
-import type { TOrderStatus, TRole } from '@/typescript'
+import type { TOrderStatus, TRoleClient } from '@/typescript'
 
 import type { TFormUi } from '@/typescript/form'
 
@@ -46,7 +46,7 @@ type StatusOption = { id: string; label: string }
 
 type RoleStatusAccessFormUiProps = TFormUi<RoleStatusAccessFormProps> & {
 
-  roles: TRole[]
+  roles: TRoleClient[]
 
   orderStatuses: TOrderStatus[]
 

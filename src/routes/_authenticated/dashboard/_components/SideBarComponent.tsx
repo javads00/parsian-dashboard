@@ -1,5 +1,3 @@
-import { Icon } from '@/assets/icon'
-import { AppLink } from '@/components/ui/link'
 import {
   Sidebar,
   SidebarContent,
@@ -12,7 +10,10 @@ import {
 } from '@/components/ui/sidebar'
 import { useAuthStore } from '@/features'
 import { useFilteredMenuItems } from '@/hooks/useFilteredMenuItems'
+import { useSidebarAccordion } from '@/hooks/useSidebarAccordion'
+import { MenuGroup, MenuItem } from '@/routes/_authenticated/dashboard/_components/sidebar'
 import type { SideBarComponentProps } from '@/routes/_authenticated/dashboard/_components/type'
+import { useMenuSelectionStore } from '@/stores/menuSelection.store'
 import { useLocation, useNavigate } from '@tanstack/react-router'
 import { LogOut } from 'lucide-react'
 
@@ -37,7 +38,10 @@ export function SideBarComponent() {
   )
 }
 
-function SideBarUi({ isSigningOut, handleSignOut, location, menuItems }: SideBarComponentProps) {
+function SideBarUi({ isSigningOut, handleSignOut, menuItems }: SideBarComponentProps) {
+  const setSelection = useMenuSelectionStore((state) => state.setSelection)
+  const { isGroupOpen, toggleGroup } = useSidebarAccordion(menuItems)
+
   return (
     <Sidebar collapsible="icon">
       <SidebarContent>
@@ -45,23 +49,30 @@ function SideBarUi({ isSigningOut, handleSignOut, location, menuItems }: SideBar
           <SidebarGroupLabel>Application</SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
-              {menuItems.map((item) => (
-                <SidebarMenuItem key={item.url}>
-                  <SidebarMenuButton asChild isActive={location.pathname === item.url}>
-                    <AppLink to={item.url} className="flex items-center gap-2">
-                      <Icon iconType={item.icon} />
-                      <span>{item.title}</span>
-                    </AppLink>
-                  </SidebarMenuButton>
-                </SidebarMenuItem>
-              ))}
+              {menuItems.map((item) =>
+                item.children?.length ? (
+                  <MenuGroup
+                    key={item.key}
+                    item={item}
+                    isOpen={isGroupOpen(item.key)}
+                    onToggle={() => toggleGroup(item.key)}
+                    onSelect={setSelection}
+                  />
+                ) : (
+                  <MenuItem
+                    key={item.url ?? item.key}
+                    item={item}
+                    onSelect={setSelection}
+                  />
+                )
+              )}
               <SidebarMenuItem key="logout">
                 <SidebarMenuButton
                   loading={isSigningOut}
                   onClick={handleSignOut}
                   disabled={isSigningOut}
                 >
-                  <LogOut />
+                  <LogOut className="size-4 shrink-0" />
                   <span>Logout</span>
                 </SidebarMenuButton>
               </SidebarMenuItem>

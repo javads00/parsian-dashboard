@@ -1,4 +1,17 @@
-import { Home, User, Package, ListOrdered, Map, MapPin, Globe } from 'lucide-react'
+import {
+  Home,
+  User,
+  Package,
+  ListOrdered,
+  Map,
+  MapPin,
+  Globe,
+  ShieldCheck,
+  ArrowLeftRight,
+  Rocket,
+  ListChecks,
+  Mail,
+} from 'lucide-react'
 
 const Icons = {
   Home,
@@ -8,6 +21,11 @@ const Icons = {
   Map,
   MapPin,
   Globe,
+  ShieldCheck,
+  ArrowLeftRight,
+  Rocket,
+  ListChecks,
+  Mail,
 }
 export type IconsType = keyof typeof Icons
 

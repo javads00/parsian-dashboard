@@ -1,4 +1,4 @@
-import { getSuccessMessage } from '@/lib'
+import { getErrorMessage, getSuccessMessage } from '@/lib'
 import type { ApiResponse } from '@/lib/services/type'
 import {
   keepPreviousData,
@@ -10,42 +10,39 @@ import {
 import { useState, type PropsWithChildren } from 'react'
 import { toast } from 'sonner'
 
+type AppMeta = {
+  toast?: boolean
+  suppressToast?: boolean
+}
+
+const shouldToastSuccess = (meta: unknown): boolean => (meta as AppMeta | undefined)?.toast === true
+
+const shouldSuppressError = (meta: unknown): boolean =>
+  (meta as AppMeta | undefined)?.suppressToast === true
+
 export default function ReactQueryProvider(props: PropsWithChildren) {
   const [queryClient] = useState(
     () =>
       new QueryClient({
         queryCache: new QueryCache({
-          // Keep query (GET) operations silent globally.
-          // We only show toasts for mutations (create/update/delete).
+          onError: (error, query) => {
+            if (shouldSuppressError(query.meta)) return
+            toast.error(getErrorMessage(error))
+          },
         }),
         mutationCache: new MutationCache({
-          onSuccess: (data, _variables, _context, mutation) => {
-            const method = String(mutation.options.meta?.method ?? '').toLowerCase()
-            if (method === 'get') return
-
-            if (
-              (data as ApiResponse<unknown>).status === 200 ||
-              (data as ApiResponse<unknown>).status === 201
-            ) {
-              // eslint-disable-next-line @typescript-eslint/no-unused-expressions
-              ; (data as ApiResponse<unknown>)?.message
-                ? toast.success(getSuccessMessage(data as ApiResponse<unknown>))
-                : null
-            } else {
-              // eslint-disable-next-line @typescript-eslint/no-unused-expressions
-              ; (data as ApiResponse<unknown>)?.message
-                ? toast.error(getSuccessMessage(data as ApiResponse<unknown>))
-                : null
-            }
+          onSuccess: (data, _vars, _ctx, mutation) => {
+            if (!shouldToastSuccess(mutation.meta)) return
+            const res = data as ApiResponse<unknown> | undefined
+            if (!res?.message) return
+            const ok = res.status === 200 || res.status === 201
+            ;(ok ? toast.success : toast.error)(getSuccessMessage(res))
           },
-
-          onError: (error, _variables, _context, mutation) => {
-            const method = String(mutation.options.meta?.method ?? '').toLowerCase()
-            if (method === 'get') return
-            toast.error(error.message)
+          onError: (error, _vars, _ctx, mutation) => {
+            if (shouldSuppressError(mutation.meta)) return
+            toast.error(getErrorMessage(error))
           },
         }),
-
         defaultOptions: {
           queries: {
             refetchOnWindowFocus: false,

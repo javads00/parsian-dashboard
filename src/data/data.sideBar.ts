@@ -1,4 +1,4 @@
-import { type MenuItem } from '@/typescript'
+import { type MenuItem, findMenuItemByPath } from '@/typescript/types/menu'
 
 export const EnumResourceType = {
   Dashboard: 'Dashboard',
@@ -10,6 +10,10 @@ export const EnumResourceType = {
   RoleStatusAccess: 'RoleStatusAccess',
   RoleMapping: 'RoleMapping',
   ReleaseApp: 'ReleaseApp',
+  EmailSetting: 'EmailSetting',
+  EmailSMTP: 'EmailSMTP',
+  EmailTemplates: 'EmailTemplates',
+  EmailEjs: 'EmailEjs',
 } as const
 
 export type TResource = (typeof EnumResourceType)[keyof typeof EnumResourceType]
@@ -36,7 +40,6 @@ export const MENU_ITEMS: MenuItem[] = [
     breadCrumb: ['Dashboard', 'Role'],
     icon: 'Package',
   },
-
   {
     title: 'Label',
     url: '/dashboard/label',
@@ -44,13 +47,12 @@ export const MENU_ITEMS: MenuItem[] = [
     breadCrumb: ['Dashboard', 'Label'],
     icon: 'MapPin',
   },
-
   {
     title: 'OrderStatus',
     url: '/dashboard/orderStatus',
     key: EnumResourceType.OrderStatus,
     breadCrumb: ['Dashboard', 'OrderStaus'],
-    icon: 'ListOrdered',
+    icon: 'ListChecks',
   },
   {
     title: 'Country',
@@ -64,21 +66,45 @@ export const MENU_ITEMS: MenuItem[] = [
     url: '/dashboard/roleStatusAccess',
     key: EnumResourceType.RoleStatusAccess,
     breadCrumb: ['Dashboard', 'RoleStatusAccess'],
-    icon: 'Package',
+    icon: 'ShieldCheck',
   },
   {
     title: 'RoleMapping',
-    url: '/dashboard/roleMapping',
+    url: '/dashboard/roleStatusMapping',
     key: EnumResourceType.RoleMapping,
     breadCrumb: ['Dashboard', 'RoleMapping'],
-    icon: 'ListOrdered',
+    icon: 'ArrowLeftRight',
   },
-
   {
     title: 'ReleaseApp',
     url: '/dashboard/releaseApp',
     key: EnumResourceType.ReleaseApp,
     breadCrumb: ['Dashboard', 'ReleaseApp'],
-    icon: 'ListOrdered',
+    icon: 'Rocket',
+  },
+  {
+    title: 'Email Settings',
+    key: EnumResourceType.EmailSetting,
+    breadCrumb: ['Dashboard', 'Email Settings'],
+    icon: 'Mail',
+    children: [
+      {
+        key: EnumResourceType.EmailSMTP,
+        label: 'SMTP',
+        path: '/dashboard/emailSetting/smtp',
+      },
+      {
+        key: EnumResourceType.EmailTemplates,
+        label: 'Email Templates',
+        path: '/dashboard/emailSetting/emailTemplates',
+      },
+      {
+        key: EnumResourceType.EmailEjs,
+        label: 'Email EJS',
+        path: '/dashboard/emailSetting/emailEjs',
+      },
+    ],
   },
 ]
+
+export { findMenuItemByPath }

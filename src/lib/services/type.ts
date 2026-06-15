@@ -1,17 +1,18 @@
 import type { UseInfiniteQueryOptions, UseQueryOptions } from '@tanstack/react-query'
 
-type MetaData = {
-  currentPage: number
+export type ApiMetaData = {
+  currentPage: number | string
   hasNextPage: boolean
   hasPrevPage: boolean
-  nextPage: number
-  prevPage: number
+  nextPage: number | string | null
+  prevPage: number | string | null
   totalPages: number
   totalItems: number
+  pages?: number[]
 }
 export interface ApiResponse<T> {
   data: T
-  metaData?: MetaData
+  metaData?: ApiMetaData
   message?: string
   pages?: number
   status: number
@@ -67,6 +68,24 @@ export interface UsePaginationQueryOptionsProps<T> {
   key: (page: number) => any
   options?: Omit<UseQueryOptions<ApiResponse<T>, Error>, 'queryKey' | 'queryFn'>
   headers?: HeadersInit
+}
+
+export function defineEndpoint<Args extends readonly unknown[]>(
+  fn: (...args: Args) => string
+): (...args: Args) => string {
+  return fn
+}
+
+export type RequestOptions = {
+  headers?: HeadersInit
+  signal?: AbortSignal
+}
+
+export type ApiEnvelope<T> = {
+  data: T
+  message?: string
+  pages?: number
+  metaData?: ApiResponse<T>['metaData']
 }
 
 export type Endpoint = string | ((...args: never[]) => string)

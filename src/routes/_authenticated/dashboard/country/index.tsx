@@ -1,8 +1,6 @@
-import { useCallback, useMemo, useRef, useState } from 'react'
-
 import {
   Button,
-  DataTable,
+  CrudListTable,
   Dialog,
   DialogContent,
   DialogDescription,
@@ -13,110 +11,71 @@ import {
   SheetHeader,
   SheetTitle,
   SheetDescription,
-  Skeleton,
   DialogFooter,
 } from '@/components'
 import { createFileRoute } from '@tanstack/react-router'
-
 import { CountryForm } from '@/features/country'
-
+import { useCallback, useMemo, useState } from 'react'
+import { useDeferredMount } from '@/hooks/useDeferredMount'
+import { useStableHandlers } from '@/hooks/useStableHandlers'
 import { useDeleteCountry, useGetCountryData } from '@/features/country/hooks'
-import { createColumns } from './_components/columns'
-
+import { normalizeEntityId } from '@/lib/utils/normalizeEntityId'
+import { columns } from './_components/columns'
 import type { TCountry } from '@/typescript'
 
+export const Route = createFileRoute('/_authenticated/dashboard/country/')({
+  component: CountryPage,
+})
+
 function CountryPage() {
-  const { data, isPending, page, setPage, refetch, dataUpdatedAt } = useGetCountryData()
+  const { rows, page, setPage, limit, totalPages, isInitialLoading } = useGetCountryData()
   const [deleteId, setDeleteId] = useState<string | null>(null)
-
-  const rafRef = useRef<number | null>(null)
-
-  const openCreate = useCallback(() => {
-    setSheet({ open: true, country: null })
-  }, [])
-
-  const [sheet, setSheet] = useState<{
-    open: boolean
-    country: TCountry | null
-  }>({
+  const [sheet, setSheet] = useState<{ open: boolean; country: TCountry | null }>({
     open: false,
     country: null,
   })
 
-  const openEdit = useCallback((country: TCountry) => {
-    const normalizedCountry = country as TCountry & { _id?: string }
-    const normalizedId = normalizedCountry.id ?? normalizedCountry._id
-    setSheet({
-      open: true,
-      country: normalizedId
-        ? ({ ...normalizedCountry, id: normalizedId } as TCountry)
-        : normalizedCountry,
-    })
-  }, [])
+  const isFormMounted = useDeferredMount(sheet.open)
 
-  const closeSheet = useCallback(() => {
-    if (rafRef.current) cancelAnimationFrame(rafRef.current)
-    rafRef.current = null
-
-    setSheet({ open: false, country: null })
-  }, [])
-
-  /* ---------------------------
-     memoized columns
-  ----------------------------*/
-  const columns = useMemo(
-    () => createColumns(page, 10, undefined, openEdit, setDeleteId),
-    [page, openEdit]
+  const openCreate = useCallback(() => setSheet({ open: true, country: null }), [])
+  const openEdit = useCallback(
+    (country: TCountry) => setSheet({ open: true, country: normalizeEntityId(country) }),
+    []
   )
+  const closeSheet = useCallback(() => setSheet({ open: false, country: null }), [])
 
+  const tableHandlers = useStableHandlers({ onEdit: openEdit, onDelete: setDeleteId })
   const { mutate: deleteCountry, isPending: isDeleting } = useDeleteCountry()
 
   const handleDelete = useCallback(() => {
     if (!deleteId) return
+    deleteCountry({ id: deleteId }, { onSuccess: () => setDeleteId(null) })
+  }, [deleteId, deleteCountry])
 
-    deleteCountry(
-      { id: deleteId },
-      {
-        onSuccess: async () => {
-          await refetch()
-          setDeleteId(null)
-        },
-      }
-    )
-  }, [deleteId, deleteCountry, refetch])
-
-  const defaultValues = useMemo(() => {
-    if (!sheet.country) return undefined
-    return {
-      name: sheet.country.name,
-    }
-  }, [sheet.country])
+  const defaultValues = useMemo(
+    () => (sheet.country ? { name: sheet.country.name } : undefined),
+    [sheet.country]
+  )
 
   return (
     <div className="w-full space-y-4">
-      {/* Header */}
       <div className="flex items-center justify-between">
         <h1 className="text-2xl font-bold">Countries</h1>
         <Button onClick={openCreate}>Add Country</Button>
       </div>
 
-      {/* Table */}
-      {isPending ? (
-        <Skeleton className="h-[400px] w-full" />
-      ) : (
-        <DataTable
-          key={dataUpdatedAt}
-          loading={isPending}
-          columns={columns}
-          data={data?.data ?? []}
-          total={data?.pages ?? 0}
-          page={page}
-          onPageChange={setPage}
-        />
-      )}
+      <CrudListTable
+        columns={columns}
+        rows={rows}
+        page={page}
+        setPage={setPage}
+        totalPages={totalPages}
+        limit={limit}
+        loading={isInitialLoading}
+        meta={tableHandlers}
+      />
 
-      {/* Sheet */}
-      <Sheet open={sheet.open} onOpenChange={(v) => !v && closeSheet()}>
+      <Sheet open={sheet.open} onOpenChange={(open) => !open && closeSheet()}>
         <SheetContent side="right" className="w-full sm:max-w-lg">
           <SheetHeader>
             <SheetTitle>{sheet.country ? 'Edit Country' : 'Create Country'}</SheetTitle>
@@ -125,32 +84,28 @@ function CountryPage() {
             </SheetDescription>
           </SheetHeader>
 
-          <CountryForm
-            key={sheet.country?.id ?? 'create'}
-            onCancel={closeSheet}
-            onSuccess={async () => {
-              await refetch()
-              closeSheet()
-            }}
-            defaultValues={defaultValues}
-            editId={sheet.country?.id}
-          />
+          {isFormMounted ? (
+            <CountryForm
+              key={sheet.country?.id ?? 'create'}
+              onCancel={closeSheet}
+              onSuccess={closeSheet}
+              defaultValues={defaultValues}
+              editId={sheet.country?.id}
+            />
+          ) : null}
         </SheetContent>
       </Sheet>
 
-      {/* Delete Dialog */}
       <Dialog open={!!deleteId} onOpenChange={() => setDeleteId(null)}>
         <DialogContent>
           <DialogHeader>
             <DialogTitle>Delete Country</DialogTitle>
             <DialogDescription>Are you sure you want to delete this country?</DialogDescription>
           </DialogHeader>
-
           <DialogFooter>
             <Button variant="outline" onClick={() => setDeleteId(null)} disabled={isDeleting}>
               Cancel
             </Button>
-
             <Button variant="destructive" onClick={handleDelete} loading={isDeleting}>
               Delete
             </Button>
@@ -160,7 +115,3 @@ function CountryPage() {
     </div>
   )
 }
-
-export const Route = createFileRoute('/_authenticated/dashboard/country/')({
-  component: CountryPage,
-})

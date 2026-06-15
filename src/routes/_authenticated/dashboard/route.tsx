@@ -16,9 +16,12 @@ import {
   SidebarProvider,
   SidebarTrigger,
 } from '@/components'
-import { MENU_ITEMS } from '@/data'
+import { EnvSwitcher } from '@/components/EnvSwitcher'
+import { MENU_ITEMS, findMenuItemByPath } from '@/data'
+import { useActiveMenuKeys } from '@/hooks/useActiveMenuKeys'
+import { useMenuSelectionStore } from '@/stores/menuSelection.store'
 import { createFileRoute, Outlet, useLocation } from '@tanstack/react-router'
-import { Fragment } from 'react/jsx-runtime'
+import { Fragment, useEffect } from 'react'
 import { SideBarComponent } from './_components/SideBarComponent'
 import type { SideBarUiProps } from './_components/type'
 
@@ -28,9 +31,15 @@ export const Route = createFileRoute('/_authenticated/dashboard')({
 
 function RouteComponent() {
   const location = useLocation()
-  const currentItem = MENU_ITEMS.find(
-    (item) => item.url === location.pathname
-  ) as (typeof MENU_ITEMS)[number]
+  const currentItem = findMenuItemByPath(location.pathname, MENU_ITEMS)
+  const activeMenuKeys = useActiveMenuKeys()
+  const setSelection = useMenuSelectionStore((state) => state.setSelection)
+
+  useEffect(() => {
+    if (activeMenuKeys) {
+      setSelection(activeMenuKeys)
+    }
+  }, [activeMenuKeys, setSelection])
 
   return <SideBarUi currentItem={currentItem} />
 }
@@ -59,29 +68,31 @@ function HeaderComponent({ currentItem }: SideBarUiProps) {
               {currentItem?.breadCrumb.map((crumb, index) => (
                 <Fragment key={crumb}>
                   <BreadcrumbItem key={crumb}>
-                    <BreadcrumbLink href={currentItem.url}>{crumb}</BreadcrumbLink>
+                    <BreadcrumbLink href={currentItem?.url ?? '#'}>{crumb}</BreadcrumbLink>
                   </BreadcrumbItem>
-                  {index < currentItem.breadCrumb.length - 1 && <BreadcrumbSeparator />}
+                  {index < (currentItem?.breadCrumb.length ?? 0) - 1 && <BreadcrumbSeparator />}
                 </Fragment>
               ))}
             </BreadcrumbList>
           </Breadcrumb>
         </h1>
       </div>
-      <DropdownMenu>
-        <DropdownMenuTrigger>
-          <Avatar>
-            <AvatarImage src="https://github.com/shadcn.png" />
-            <AvatarFallback>CN</AvatarFallback>
-          </Avatar>
-        </DropdownMenuTrigger>
-        <DropdownMenuContent className="w-48" align="center">
-          <DropdownMenuLabel>My Account</DropdownMenuLabel>
-          <DropdownMenuSeparator />
-          <DropdownMenuItem>Settings</DropdownMenuItem>
-          <DropdownMenuItem>Profile</DropdownMenuItem>
-        </DropdownMenuContent>
-      </DropdownMenu>
+      <div className="flex items-center gap-3">
+        <EnvSwitcher />
+        <DropdownMenu>
+          <DropdownMenuTrigger>
+            <Avatar>
+              <AvatarImage src="https://github.com/shadcn.png" />
+              <AvatarFallback>CN</AvatarFallback>
+            </Avatar>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent className="w-48" align="center">
+            <DropdownMenuLabel>My Account</DropdownMenuLabel>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem>Profile</DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
+      </div>
     </div>
   )
 }

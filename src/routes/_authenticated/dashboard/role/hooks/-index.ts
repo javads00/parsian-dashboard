@@ -1,37 +1,15 @@
 import { DATE_FIELD_MAP } from '@/data'
-import { endpoints } from '@/lib/services/endpoints'
-import { useCustomPaginationQuery, useCustomQuery } from '@/lib/services/useQuery'
+import { usePaginatedList } from '@/hooks/usePaginatedList'
+import { rolesListQuery } from '@/lib/services/queries/lists'
+import { keys } from '@/lib/services/keys'
 import type { TRole } from '@/typescript'
 import { useState } from 'react'
 import type { RoleListCondition, RoleListRequest } from '../_components/type'
 
-export const useGetAdminsData = () => {
-  const { data, isPending, page, setPage, refetch, dataUpdatedAt } = useCustomPaginationQuery<TRole[]>({
-    url: (page: number) => endpoints.roles.list(page, 50),
-    key: (page: number) => endpoints.roles.key(page, 50),
-  })
+export const useGetRolesData = () => usePaginatedList<TRole>(rolesListQuery, keys.roles.lists())
 
-  return {
-    data,
-    isPending,
-    page,
-    setPage,
-    refetch,
-    dataUpdatedAt,
-  }
-}
-
-export const useGetOrderStatusData = () => {
-  const { data, isPending } = useCustomQuery<TRole[]>({
-    url: endpoints.admins.list(1, 10),
-    key: ['admins', 'list', '1', '10'],
-  })
-
-  return {
-    data,
-    isPending,
-  }
-}
+/** @deprecated Use useGetRolesData */
+export const useGetAdminsData = useGetRolesData
 
 export function useOrderFilters(initial?: Partial<RoleListRequest>) {
   const [filters, setFilters] = useState<RoleListRequest>({
@@ -85,3 +63,5 @@ export function buildDateCondition(
     [map.to]: to,
   }
 }
+
+export type { TRole }

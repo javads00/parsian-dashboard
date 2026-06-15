@@ -1,18 +1,13 @@
-// hooks/useFilteredMenuItems.ts
-import { EnumResourceType, MENU_ITEMS } from '@/data'
+import { MENU_ITEMS } from '@/data'
 import { useAuthStore } from '@/features'
+import { filterMenuItemsByPermission } from '@/lib/menuPermissions'
+import { useMemo } from 'react'
 
 export function useFilteredMenuItems() {
   const { user } = useAuthStore()
-  const role = user?.roleId
-  if (!role) return []
-  if (role.fullAccess) return MENU_ITEMS
-  return MENU_ITEMS.filter((item) => {
-    if (item.key === EnumResourceType.Dashboard) return true
-    const resourceName = EnumResourceType[item.key]
-    if (!resourceName) return false
-    const permission = role.permissions.find((p: any) => p.resource === resourceName)
-    if (!permission) return false
-    return true
-  })
+
+  return useMemo(() => {
+    const role = user?.roleId
+    return filterMenuItemsByPermission(role, MENU_ITEMS)
+  }, [user?.roleId])
 }
